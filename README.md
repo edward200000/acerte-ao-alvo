@@ -272,3 +272,414 @@
   </script>
 </body>
 </html>
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Target Arena</title>
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #101323;
+  color: white;
+  text-align: center;
+}
+
+header {
+  padding: 18px;
+  background: #1c2140;
+  box-shadow: 0 3px 15px #0005;
+}
+
+h1 { margin: 5px; color: #65f7ff; }
+
+.hud {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 14px;
+  font-size: 18px;
+}
+
+button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 9px;
+  padding: 11px 16px;
+  font-weight: bold;
+  background: #65f7ff;
+  color: #101323;
+}
+
+button:hover { filter: brightness(1.15); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+
+#arena {
+  height: 360px;
+  max-width: 850px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle, #26345b, #13182d 75%);
+  border: 2px solid #65f7ff;
+  border-radius: 14px;
+  cursor: crosshair;
+  touch-action: manipulation;
+}
+
+#target {
+  width: 70px;
+  height: 70px;
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    white 0 10%,
+    #ff4242 11% 30%,
+    white 31% 48%,
+    #ff4242 49% 70%,
+    #8d111d 71%);
+  box-shadow: 0 0 18px #ff4242;
+  transform: translate(-50%, -50%);
+  cursor: crosshair;
+}
+
+#target.hidden { display: none; }
+
+#message {
+  min-height: 28px;
+  padding: 12px;
+  color: #ffe66d;
+  font-weight: bold;
+}
+
+.shop {
+  max-width: 850px;
+  margin: 20px auto;
+  padding: 16px;
+}
+
+.items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 12px;
+}
+
+.item {
+  padding: 15px;
+  border: 1px solid #414b70;
+  border-radius: 12px;
+  background: #1c2140;
+}
+
+.item .preview {
+  font-size: 35px;
+  margin: 8px;
+}
+
+.item h3 { margin: 7px 0; }
+.item p { color: #c5cbe0; font-size: 14px; }
+
+.particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: burst .6s ease-out forwards;
+}
+
+@keyframes burst {
+  to {
+    transform: translate(var(--dx), var(--dy)) scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes flash {
+  50% { filter: brightness(2.5); }
+}
+
+#arena.hit { animation: flash .18s; }
+
+.crosshair {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  font-size: 28px;
+  transform: translate(-50%, -50%);
+}
+
+footer {
+  padding: 20px;
+  color: #929bbd;
+  font-size: 13px;
+}
+</style>
+</head>
+
+<body>
+<header>
+  <h1>🎯 TARGET ARENA</h1>
+  <p>Faça pontos, compre melhorias e acerte com estilo!</p>
+</header>
+
+<div class="hud">
+  <div>💰 Moedas: <b id="coins">0</b></div>
+  <div>🎯 Acertos: <b id="score">0</b></div>
+  <div>✨ Efeito: <b id="effectName">Básico</b></div>
+</div>
+
+<div id="arena">
+  <div id="target" title="Acerte o alvo!"></div>
+  <div id="crosshair" class="crosshair">⊕</div>
+</div>
+
+<div id="message">Clique no alvo para ganhar moedas!</div>
+
+<section class="shop">
+  <h2>🛒 Loja de melhorias</h2>
+  <p>Compre efeitos e miras usando as moedas que ganhar.</p>
+  <div class="items" id="items"></div>
+</section>
+
+<footer>Seu progresso é salvo neste navegador.</footer>
+
+<script>
+const arena = document.getElementById("arena");
+const target = document.getElementById("target");
+const coinsEl = document.getElementById("coins");
+const scoreEl = document.getElementById("score");
+const effectName = document.getElementById("effectName");
+const message = document.getElementById("message");
+const crosshair = document.getElementById("crosshair");
+
+const upgrades = [
+  {
+    id: "fire",
+    name: "🔥 Explosão de fogo",
+    price: 30,
+    description: "Partículas laranja e vermelhas.",
+    preview: "🔥"
+  },
+  {
+    id: "ice",
+    name: "❄️ Explosão de gelo",
+    price: 50,
+    description: "Efeito de partículas azuis.",
+    preview: "❄️"
+  },
+  {
+    id: "neon",
+    name: "⚡ Explosão neon",
+    price: 80,
+    description: "Partículas coloridas brilhantes.",
+    preview: "⚡"
+  },
+  {
+    id: "laser",
+    name: "🔴 Mira laser",
+    price: 40,
+    description: "Troca o visual da mira.",
+    preview: "🔴"
+  },
+  {
+    id: "star",
+    name: "🌟 Mira estelar",
+    price: 60,
+    description: "Uma mira em formato de estrela.",
+    preview: "🌟"
+  }
+];
+
+let saved = {};
+try {
+  saved = JSON.parse(localStorage.getItem("targetArenaSave")) || {};
+} catch {}
+
+let coins = Number.isFinite(saved.coins) ? saved.coins : 0;
+let score = Number.isFinite(saved.score) ? saved.score : 0;
+let owned = Array.isArray(saved.owned) ? saved.owned : [];
+let equipped = saved.equipped || "";
+let aim = saved.aim || "basic";
+
+function save() {
+  localStorage.setItem("targetArenaSave", JSON.stringify({
+    coins, score, owned, equipped, aim
+  }));
+}
+
+function updateHUD() {
+  coinsEl.textContent = coins;
+  scoreEl.textContent = score;
+
+  const active = upgrades.find(item => item.id === equipped);
+  effectName.textContent = active
+    ? active.name
+    : aim === "laser" ? "Mira laser"
+    : aim === "star" ? "Mira estelar"
+    : "Básico";
+}
+
+function renderShop() {
+  const items = document.getElementById("items");
+  items.innerHTML = "";
+
+  upgrades.forEach(item => {
+    const isOwned = owned.includes(item.id);
+    const isEffect = ["fire", "ice", "neon"].includes(item.id);
+    const isEquipped = isEffect
+      ? equipped === item.id
+      : aim === item.id;
+
+    const card = document.createElement("div");
+    card.className = "item";
+
+    const preview = document.createElement("div");
+    preview.className = "preview";
+    preview.textContent = item.preview;
+
+    const title = document.createElement("h3");
+    title.textContent = item.name;
+
+    const desc = document.createElement("p");
+    desc.textContent = item.description;
+
+    const btn = document.createElement("button");
+    btn.textContent = isEquipped
+      ? "Equipado"
+      : isOwned ? "Equipar" : `Comprar (${item.price} 🪙)`;
+    btn.disabled = isEquipped || (!isOwned && coins < item.price);
+
+    btn.addEventListener("click", () => {
+      if (!owned.includes(item.id)) {
+        if (coins < item.price) return;
+        coins -= item.price;
+        owned.push(item.id);
+      }
+
+      if (isEffect) {
+        equipped = item.id;
+      } else {
+        aim = item.id;
+      }
+
+      save();
+      updateHUD();
+      renderShop();
+      message.textContent = "Melhoria equipada! ✨";
+    });
+
+    card.append(preview, title, desc, btn);
+    items.appendChild(card);
+  });
+
+  updateHUD();
+}
+
+function moveTarget() {
+  const padding = 40;
+  const maxX = Math.max(padding, arena.clientWidth - padding);
+  const maxY = Math.max(padding, arena.clientHeight - padding);
+
+  target.style.left =
+    (padding + Math.random() * (maxX - padding)) + "px";
+  target.style.top =
+    (padding + Math.random() * (maxY - padding)) + "px";
+}
+
+function createParticles(x, y) {
+  let colors = ["#ffffff", "#ff4242", "#ffb347"];
+
+  if (equipped === "fire") {
+    colors = ["#ff3b20", "#ff9f1c", "#ffe66d"];
+  } else if (equipped === "ice") {
+    colors = ["#72f1ff", "#ffffff", "#4385ff"];
+  } else if (equipped === "neon") {
+    colors = ["#ff4dff", "#65f7ff", "#b7ff45", "#ffe66d"];
+  }
+
+  const count = equipped ? 28 : 12;
+
+  for (let i = 0; i < count; i++) {
+    const particle = document.createElement("div");
+    particle.className = "particle";
+    particle.style.left = x + "px";
+    particle.style.top = y + "px";
+    particle.style.background =
+      colors[Math.floor(Math.random() * colors.length)];
+
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 30 + Math.random() * 75;
+
+    particle.style.setProperty("--dx",
+      Math.cos(angle) * distance + "px");
+    particle.style.setProperty("--dy",
+      Math.sin(angle) * distance + "px");
+
+    arena.appendChild(particle);
+    particle.addEventListener("animationend", () => particle.remove());
+  }
+
+  arena.classList.remove("hit");
+  void arena.offsetWidth;
+  arena.classList.add("hit");
+}
+
+target.addEventListener("click", event => {
+  event.stopPropagation();
+
+  const rect = arena.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+
+  createParticles(x, y);
+
+  score++;
+  coins += 5;
+
+  message.textContent = "+5 moedas! 🎉";
+  moveTarget();
+  save();
+  updateHUD();
+  renderShop();
+});
+
+arena.addEventListener("pointermove", event => {
+  const rect = arena.getBoundingClientRect();
+  crosshair.style.left = (event.clientX - rect.left) + "px";
+  crosshair.style.top = (event.clientY - rect.top) + "px";
+});
+
+arena.addEventListener("click", event => {
+  if (event.target === target) return;
+  message.textContent = "Você errou! Tente acertar o alvo.";
+});
+
+function updateAim() {
+  crosshair.textContent =
+    aim === "laser" ? "✛" :
+    aim === "star" ? "✦" : "⊕";
+
+  crosshair.style.color =
+    aim === "laser" ? "#ff4242" :
+    aim === "star" ? "#ffe66d" : "#65f7ff";
+}
+
+const oldRenderShop = renderShop;
+renderShop = function() {
+  oldRenderShop();
+  updateAim();
+};
+
+moveTarget();
+renderShop();
+</script>
+</body>
+</html>
