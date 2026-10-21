@@ -3,50 +3,425 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Acerte o Alvo Extremo 🔥</title>
+<title>Acerte ao Alvo — Inferno</title>
+
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#100307;color:white;font-family:Arial,sans-serif;overflow:hidden}
-#game{position:relative;width:100vw;height:100vh;background:radial-gradient(ellipse at bottom,#6b1609,#180308 55%,#050205)}
-canvas{position:absolute;width:100%;height:100%;inset:0;cursor:crosshair}
-#hud{position:absolute;top:15px;left:15px;right:15px;display:flex;justify-content:space-between;gap:10px;pointer-events:none}
-.panel{background:#16090de8;border:1px solid #a42b26;border-radius:10px;padding:12px;box-shadow:0 0 20px #ff280622}
-h1{margin:0;color:#ff6236;font-size:clamp(18px,3vw,30px);text-shadow:0 0 15px red}
-.stat{text-align:center;min-width:75px}
-.label{font-size:10px;color:#ffb49c}
-.value{font-size:22px;font-weight:bold;margin-top:5px}
-#stats{display:flex;gap:7px}
-#bossBox{display:none;position:absolute;top:105px;left:20%;width:60%;text-align:center;color:#ff6747;font-weight:bold}
-#bossTrack{height:14px;background:#321018;border:1px solid #ff6545;border-radius:10px;overflow:hidden;margin-top:6px}
-#bossHealth{height:100%;width:100%;background:linear-gradient(90deg,#ff172b,#ff8a25)}
-#powers{position:absolute;bottom:18px;left:18px;display:flex;gap:10px}
-button{padding:12px 15px;color:white;font-weight:bold;background:#85151c;border:1px solid #ff593d;border-radius:8px;cursor:pointer}
-button:hover{filter:brightness(1.3)}
-button:disabled{opacity:.4}
-#help{position:absolute;bottom:20px;right:20px;text-align:right;color:#ffc0a6;font-size:12px;line-height:1.7}
-#overlay{position:absolute;inset:0;background:#080204dd;display:flex;justify-content:center;align-items:center;padding:20px;z-index:3}
-.card{max-width:520px;width:100%;text-align:center;padding:30px;background:linear-gradient(145deg,#30090f,#100408);border:1px solid #c63831;border-radius:18px;box-shadow:0 0 55px #f20d2425}
-.card h2{font-size:clamp(35px,8vw,62px);margin:15px 0;color:#ff6038;text-shadow:0 0 20px #f30}
-.card p{line-height:1.6;color:#e6b9b0}
-.actions{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:18px 0}
-#message{position:absolute;top:40%;width:100%;text-align:center;font-size:clamp(25px,6vw,50px);font-weight:bold;color:#ffe2a0;text-shadow:0 0 20px red;pointer-events:none}
-#toast{position:absolute;top:27%;width:100%;text-align:center;color:#ffcf70;font-weight:bold;pointer-events:none}
-@media(max-width:600px){#hud{top:7px;left:7px;right:7px}.panel{padding:7px}.stat{min-width:53px}.value{font-size:17px}#powers{left:7px;bottom:8px}button{padding:9px;font-size:11px}#help{display:none}}
+:root {
+  --bg: #100307;
+  --panel: #19090e;
+  --red: #ff3d35;
+  --orange: #ff623b;
+  --text: #fff3ef;
+  --muted: #ffb5a4;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(
+    ellipse at 50% 70%, #30090d 0%, var(--bg) 65%
+  );
+  color: var(--text);
+  font-family: Arial, sans-serif;
+}
+
+main {
+  max-width: 1120px;
+  margin: auto;
+  padding: 18px;
+}
+
+header {
+  border-bottom: 1px solid #7b3030;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+}
+
+h1 {
+  margin: 0;
+  color: #0789ff;
+  text-shadow: 0 0 15px #ff382d;
+  font-size: clamp(25px, 4vw, 34px);
+}
+
+.top {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.panel, .stat {
+  border: 1px solid #a82a2a;
+  border-radius: 12px;
+  background: #17080d;
+}
+
+.panel {
+  padding: 16px;
+  min-width: 210px;
+}
+
+.panel h2 {
+  color: var(--orange);
+  font-size: 28px;
+  margin: 18px 0 10px;
+}
+
+.panel p {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 5px 0;
+}
+
+.stats {
+  display: flex;
+  gap: 7px;
+}
+
+.stat {
+  width: 76px;
+  min-height: 90px;
+  text-align: center;
+  padding: 13px 4px;
+}
+
+.stat small {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  margin-bottom: 10px;
+}
+
+.stat strong {
+  font-size: 21px;
+}
+
+.arena {
+  margin: 20px 0 14px;
+  border: 1px solid #612027;
+  border-radius: 14px;
+  min-height: 300px;
+  height: min(48vh, 440px);
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(
+    ellipse at 50% 100%, #4b1111 0%, #1b070c 65%
+  );
+  touch-action: manipulation;
+}
+
+.arena::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 50px;
+  background: linear-gradient(transparent, #090306);
+  pointer-events: none;
+}
+
+.target {
+  position: absolute;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: crosshair;
+  user-select: none;
+  filter: drop-shadow(0 0 10px #ff3b21);
+  font-size: 56px;
+  line-height: 1;
+  z-index: 2;
+}
+
+.message {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  color: #ffd5c9;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+button {
+  border: 1px solid #ff5946;
+  border-radius: 9px;
+  padding: 12px 18px;
+  background: #8e1d20;
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #c32b2b;
+}
+
+#hint {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+footer {
+  color: #a97878;
+  font-size: 12px;
+  margin-top: 16px;
+}
+
+@media (max-width: 560px) {
+  main { padding: 12px; }
+  .top { gap: 10px; }
+  .panel { width: 100%; }
+  .stats { width: 100%; }
+  .stat { flex: 1; width: auto; }
+  .arena { height: 360px; }
+}
 </style>
 </head>
+
 <body>
-<div id="game">
-<canvas id="canvas"></canvas>
-<div id="hud">
- <div class="panel">
-  <h1>🔥 INFERNO</h1>
-  <div class="label" id="mode">MODO INFERNO</div>
-  <div class="label">FASE <b id="level">1</b></div>
- </div>
- <div id="stats">
-  <div class="panel stat"><div class="label">PONTOS</div><div class="value" id="score">0</div></div>
-  <div class="panel stat"><div class="label">COMBO</div><div class="value" id="combo">x0</div></div>
-  <div class="panel stat"><div class="label">VIDAS</div><div class="value" id="lives">♥♥♥</div></div>
-  <div class="panel stat"><div class="label">RECORDE</div><div class="value" id="record">0</div></div>
- </div>
-</div
+<main>
+  <header>
+    <h1>acerte-ao-alvo</h1>
+  </header>
+
+  <section class="top">
+    <div class="panel">
+      <h2>🔥 INFERNO</h2>
+      <hr style="border:0;border-top:1px solid #854040">
+      <p id="mode">MODO INFERNO</p>
+      <p id="phase">FASE 1</p>
+    </div>
+
+    <div class="stats" aria-live="polite">
+      <div class="stat">
+        <small>PONTOS</small>
+        <strong id="score">0</strong>
+      </div>
+      <div class="stat">
+        <small>COMBO</small>
+        <strong id="combo">x0</strong>
+      </div>
+      <div class="stat">
+        <small>VIDAS</small>
+        <strong id="lives">♥♥♥</strong>
+      </div>
+      <div class="stat">
+        <small>RECORDE</small>
+        <strong id="best">0</strong>
+      </div>
+    </div>
+  </section>
+
+  <section class="arena" id="arena" aria-label="Área do jogo">
+    <div class="message" id="message">
+      Acerte o alvo para ganhar pontos!<br>
+      Pressione “Começar jogo” para jogar.
+    </div>
+    <button class="target" id="target" aria-label="Acertar alvo">🎯</button>
+  </section>
+
+  <div class="controls">
+    <button id="start">▶ Começar jogo</button>
+    <button id="restart" hidden>↻ Jogar novamente</button>
+    <span id="hint">Você tem 30 segundos e 3 vidas.</span>
+  </div>
+
+  <footer>
+    Dica: toque ou clique no alvo assim que ele aparecer.
+  </footer>
+</main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+
+  const arena = $('arena');
+  const target = $('target');
+  const message = $('message');
+
+  let score = 0;
+  let combo = 0;
+  let lives = 3;
+  let timeLeft = 30;
+  let active = false;
+  let timer = null;
+  let spawnTimer = null;
+  let best = 0;
+
+  try {
+    best = Number(
+      localStorage.getItem('acerteAoAlvoBest') || 0
+    );
+  } catch (e) {}
+
+  $('best').textContent = best;
+
+  function update() {
+    $('score').textContent = score;
+    $('combo').textContent = 'x' + combo;
+
+    $('lives').textContent =
+      '♥'.repeat(lives) + '♡'.repeat(3 - lives);
+
+    $('phase').textContent =
+      'FASE ' + (1 + Math.floor(score / 100));
+
+    $('hint').textContent = active
+      ? `Tempo: ${timeLeft}s — acerte o alvo!`
+      : 'Você tem 30 segundos e 3 vidas.';
+  }
+
+  function placeTarget() {
+    if (!active) return;
+
+    const pad = 8;
+
+    const maxX = Math.max(
+      pad,
+      arena.clientWidth - target.offsetWidth - pad
+    );
+
+    const maxY = Math.max(
+      pad,
+      arena.clientHeight - target.offsetHeight - pad
+    );
+
+    target.style.left =
+      (pad + Math.random() * (maxX - pad)) + 'px';
+
+    target.style.top =
+      (pad + Math.random() * (maxY - pad)) + 'px';
+
+    target.style.display = 'flex';
+
+    target.textContent =
+      Math.random() < 0.18 ? '🔥' : '🎯';
+
+    clearTimeout(spawnTimer);
+
+    spawnTimer = setTimeout(() => {
+      if (!active) return;
+
+      target.style.display = 'none';
+      combo = 0;
+      lives--;
+
+      update();
+
+      if (lives <= 0) {
+        endGame('Fim de jogo! Suas 3 vidas acabaram.');
+      } else {
+        spawnTimer = setTimeout(placeTarget, 350);
+      }
+    }, 1500);
+  }
+
+  function endGame(text) {
+    active = false;
+
+    clearInterval(timer);
+    clearTimeout(spawnTimer);
+
+    target.style.display = 'none';
+    message.style.display = 'flex';
+
+    message.innerHTML =
+      `${text}<br><strong>Pontuação: ${score}</strong>`;
+
+    $('start').hidden = true;
+    $('restart').hidden = false;
+
+    if (score > best) {
+      best = score;
+      $('best').textContent = best;
+
+      try {
+        localStorage.setItem(
+          'acerteAoAlvoBest',
+          String(best)
+        );
+      } catch (e) {}
+    }
+
+    update();
+  }
+
+  function startGame() {
+    clearInterval(timer);
+    clearTimeout(spawnTimer);
+
+    score = 0;
+    combo = 0;
+    lives = 3;
+    timeLeft = 30;
+    active = true;
+
+    message.style.display = 'none';
+    $('start').hidden = true;
+    $('restart').hidden = true;
+
+    update();
+    placeTarget();
+
+    timer = setInterval(() => {
+      timeLeft--;
+      update();
+
+      if (timeLeft <= 0) {
+        endGame('Tempo esgotado!');
+      }
+    }, 1000);
+  }
+
+  target.addEventListener('click', e => {
+    e.stopPropagation();
+
+    if (!active) return;
+
+    clearTimeout(spawnTimer);
+
+    score += 10 + Math.min(combo, 10) * 2;
+    combo++;
+
+    target.style.display = 'none';
+
+    update();
+
+    spawnTimer = setTimeout(placeTarget, 220);
+  });
+
+  arena.addEventListener('click', e => {
+    if (!active || e.target === target) return;
+
+    combo = 0;
+    update();
+  });
+
+  $('start').addEventListener('click', startGame);
+  $('restart').addEventListener('click', startGame);
+
+  update();
+})();
+</script>
+</body>
+</html>
