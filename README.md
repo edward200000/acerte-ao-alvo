@@ -61,25 +61,135 @@
       touch-action: manipulation;
     }
 
-    #alvo {
-      position: absolute;
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      background: radial-gradient(
-        circle,
-        white 0 12%,
-        red 13% 30%,
-        white 31% 48%,
-        red 49% 70%,
-        #b91c1c 71%
-      );
-      border: 2px solid white;
-      box-shadow: 0 0 18px #ef4444;
-      cursor: crosshair;
-      transform: translate(-50%, -50%);
-    }
+   const campo = document.getElementById("campo");
+const alvo = document.getElementById("alvo");
+const mensagem = document.getElementById("mensagem");
 
+let tamanho = 90;
+let tempo = 30;
+let pontos = 0;
+let jogoAtivo = false;
+let intervaloTempo;
+let movimento;
+let fuga;
+let ultimaFuga = 0;
+
+function posicionarAlvo() {
+  const margem = tamanho / 2 + 4;
+
+  const x = margem + Math.random() *
+    (campo.clientWidth - margem * 2);
+  const y = margem + Math.random() *
+    (campo.clientHeight - margem * 2);
+
+  alvo.style.left = `${x}px`;
+  alvo.style.top = `${y}px`;
+}
+
+function iniciarJogo() {
+  clearInterval(intervaloTempo);
+  clearInterval(movimento);
+  clearInterval(fuga);
+
+  tamanho = 90;
+  tempo = 30;
+  pontos = 0;
+  jogoAtivo = true;
+
+  alvo.style.width = `${tamanho}px`;
+  alvo.style.height = `${tamanho}px`;
+  alvo.style.display = "block";
+
+  posicionarAlvo();
+  atualizarPainel();
+
+  // 1. Alvo em movimento
+  movimento = setInterval(() => {
+    if (jogoAtivo) posicionarAlvo();
+  }, 1100);
+
+  // 2. O alvo foge quando o mouse se aproxima
+  campo.addEventListener("mousemove", fugirDoMouse);
+
+  // 3. Contagem regressiva
+  intervaloTempo = setInterval(() => {
+    tempo--;
+    atualizarPainel();
+
+    if (tempo <= 0) encerrarJogo();
+  }, 1000);
+
+  mensagem.textContent = "Valendo! Acerte o alvo!";
+}
+
+function fugirDoMouse(evento) {
+  if (!jogoAtivo) return;
+
+  const agora = Date.now();
+  if (agora - ultimaFuga < 350) return;
+
+  const caixaCampo = campo.getBoundingClientRect();
+  const mouseX = evento.clientX - caixaCampo.left;
+  const mouseY = evento.clientY - caixaCampo.top;
+
+  const alvoX = parseFloat(alvo.style.left) || 0;
+  const alvoY = parseFloat(alvo.style.top) || 0;
+
+  const distancia = Math.hypot(mouseX - alvoX, mouseY - alvoY);
+
+  if (distancia < tamanho * 1.3) {
+    ultimaFuga = agora;
+    posicionarAlvo();
+  }
+}
+
+function acertouAlvo() {
+  if (!jogoAtivo) return;
+
+  pontos++;
+
+  // 4. Alvo menor a cada acerto
+  tamanho = Math.max(22, tamanho - 7);
+
+  alvo.style.width = `${tamanho}px`;
+  alvo.style.height = `${tamanho}px`;
+
+  // Ganha pontos extras conforme o alvo diminui
+  pontos += tamanho <= 43 ? 1 : 0;
+
+  posicionarAlvo();
+  atualizarPainel();
+
+  mensagem.textContent = "Acertou! Agora ficou mais difícil!";
+}
+
+function atualizarPainel() {
+  const pontuacao = document.getElementById("pontuacao");
+  const cronometro = document.getElementById("tempo");
+
+  if (pontuacao) pontuacao.textContent = pontos;
+  if (cronometro) cronometro.textContent = tempo;
+}
+
+function encerrarJogo() {
+  jogoAtivo = false;
+
+  clearInterval(intervaloTempo);
+  clearInterval(movimento);
+  clearInterval(fuga);
+
+  campo.removeEventListener("mousemove", fugirDoMouse);
+  alvo.style.display = "none";
+
+  mensagem.textContent = `Fim de jogo! Você fez ${pontos} pontos.`;
+}
+
+// Clique no alvo conta como acerto
+
+alvo.addEventListener("click", (evento) => {
+  evento.stopPropagation();
+  acertouAlvo();
+});
     #mensagem {
       min-height: 26px;
       color: #facc15;
