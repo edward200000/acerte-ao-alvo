@@ -683,3 +683,8 @@ renderShop();
 </script>
 </body>
 </html>
+
+<div class="hud">
+  <div>⏱️ Tempo: <b id="timer">60</b>s</div>
+  <div>📏 Tamanho: <b id="targetSize">70</b>px</div>
+</div>
