@@ -490,3 +490,238 @@ footer{color:#a97878;font-size:12px;margin-top:16px;line-height:1.5}
 </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acerte o Alvo 1v1</title>
+<style>
+* { box-sizing:border-box }
+body {
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:linear-gradient(135deg,#090d20,#17264b);
+  color:white;
+  text-align:center;
+  min-height:100vh;
+  padding:25px;
+}
+.container {
+  max-width:600px;
+  margin:35px auto;
+  background:#182443;
+  border:1px solid #35466f;
+  padding:25px;
+  border-radius:20px;
+}
+h1 {color:#ffd43b}
+button {
+  padding:14px 22px;
+  border:0;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:16px;
+  font-weight:bold;
+  margin:8px;
+}
+.create {background:#287cff;color:white}
+.join {background:#ff3c55;color:white}
+input {
+  padding:13px;
+  border-radius:9px;
+  border:0;
+  width:80%;
+  margin:10px;
+  text-align:center;
+}
+.players {
+  display:flex;
+  justify-content:space-around;
+  margin:20px 0;
+}
+.blue {color:#42a5ff}
+.red {color:#ff5368}
+#arena {
+  height:280px;
+  background:#0b1530;
+  border-radius:15px;
+  position:relative;
+  overflow:hidden;
+  margin-top:20px;
+  border:2px solid #344a79;
+}
+.target {
+  position:absolute;
+  width:55px;
+  height:55px;
+  border-radius:50%;
+  background:#ffdb35;
+  border:8px solid #ff5757;
+  cursor:pointer;
+}
+.hidden {display:none}
+</style>
+</head>
+<body>
+
+<div class="container" id="lobby">
+  <h1>🎯 ACERTE O ALVO</h1>
+  <h2>DUEL0 1 VS 1</h2>
+  <p>Crie uma sala ou entre na sala de um amigo!</p>
+
+  <button class="create" onclick="createRoom()">
+    + CRIAR SALA
+  </button>
+
+  <div id="created" class="hidden">
+    <h3>Sala criada!</h3>
+    <h2 id="roomCode"></h2>
+    <p>Compartilhe o código com seu amigo.</p>
+  </div>
+
+  <hr>
+
+  <input id="codeInput" placeholder="Digite o código da sala">
+  <br>
+  <button class="join" onclick="joinRoom()">
+    ENTRAR NA SALA
+  </button>
+  <p id="message"></p>
+</div>
+
+<div class="container hidden" id="game">
+  <h1>🎯 DUELO 1 VS 1</h1>
+
+  <div class="players">
+    <div class="blue">
+      <h3>🔵 JOGADOR 1</h3>
+      <h2 id="score1">0</h2>
+    </div>
+    <div class="red">
+      <h3>🔴 JOGADOR 2</h3>
+      <h2 id="score2">0</h2>
+    </div>
+  </div>
+
+  <h3 id="turn">Vez do jogador azul!</h3>
+  <p>Tempo: <span id="time">30</span>s</p>
+  <div id="arena"></div>
+  <h2 id="result"></h2>
+</div>
+
+<script>
+let room = "";
+let score1 = 0;
+let score2 = 0;
+let player = 1;
+let time = 30;
+let timer;
+let playing = false;
+
+function createRoom() {
+  room = Math.random().toString(36)
+    .substring(2,8).toUpperCase();
+
+  document.getElementById("created")
+    .classList.remove("hidden");
+
+  document.getElementById("roomCode").textContent = room;
+  document.getElementById("message").textContent =
+    "Sala criada! Você será o jogador azul.";
+
+  startGame();
+}
+
+function joinRoom() {
+  let code = document.getElementById("codeInput")
+    .value.toUpperCase().trim();
+
+  if(code.length < 4) {
+    document.getElementById("message").textContent =
+      "Digite um código válido!";
+    return;
+  }
+
+  room = code;
+  document.getElementById("message").textContent =
+    "Entrando na sala como jogador vermelho!";
+  startGame();
+}
+
+function startGame() {
+  document.getElementById("lobby")
+    .classList.add("hidden");
+  document.getElementById("game")
+    .classList.remove("hidden");
+
+  score1 = 0;
+  score2 = 0;
+  time = 30;
+  player = 1;
+  playing = true;
+
+  update();
+  spawnTarget();
+
+  clearInterval(timer);
+  timer = setInterval(() => {
+    time--;
+    document.getElementById("time").textContent = time;
+
+    if(time <= 0) endGame();
+  },1000);
+}
+
+function update() {
+  document.getElementById("score1").textContent = score1;
+  document.getElementById("score2").textContent = score2;
+  document.getElementById("turn").textContent =
+    player === 1 ? "Vez do jogador azul!" :
+    "Vez do jogador vermelho!";
+}
+
+function spawnTarget() {
+  if(!playing) return;
+
+  const arena = document.getElementById("arena");
+  arena.innerHTML = "";
+
+  let target = document.createElement("div");
+  target.className = "target";
+
+  target.style.left =
+    Math.random() * (arena.clientWidth - 60) + "px";
+
+  target.style.top =
+    Math.random() * (arena.clientHeight - 60) + "px";
+
+  target.onclick = () => {
+    if(!playing) return;
+
+    if(player === 1) score1++;
+    else score2++;
+
+    player = player === 1 ? 2 : 1;
+
+    update();
+    spawnTarget();
+  };
+
+  arena.appendChild(target);
+}
+
+function endGame() {
+  playing = false;
+  clearInterval(timer);
+  document.getElementById("arena").innerHTML = "";
+
+  let result = score1 > score2 ?
+    "🔵 JOGADOR AZUL VENCEU!" :
+    score2 > score1 ?
+    "🔴 JOGADOR VERMELHO VENCEU!" :
+    "🤝 EMPATE!";
+
+  document.getElementById("result").textContent = result;
+}
+</script>
