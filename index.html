@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:image" content="capa.png" />
+
+  <title>Tiro ao Alvo</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #101827;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px 10px;
+    }
+
+    h1 {
+      color: #38bdf8;
+    }
+
+    .painel {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 24px;
+      font-size: 18px;
+      margin: 20px 0;
+    }
+
+    .valor {
+      color: #facc15;
+      font-weight: bold;
+    }
+
+    button {
+      padding: 12px 24px;
+      background: #22c55e;
+      color: white;
+      border: 0;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      margin-bottom: 15px;
+    }
+
+    #campo {
+      position: relative;
+      width: 100%;
+      max-width: 700px;
+      height: 400px;
+      margin: auto;
+      overflow: hidden;
+      background: radial-gradient(circle, #1e3a5f, #0f172a);
+      border: 3px solid #38bdf8;
+      border-radius: 12px;
+      cursor: crosshair;
+      touch-action: manipulation;
+    }
+
+    #alvo {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        white 0 12%,
+        red 13% 30%,
+        white 31% 48%,
+        red 49% 70%,
+        white 71% 82%,
+        red 83% 100%
+      );
+      box-shadow: 0 0 12px #f87171;
+      transform: translate(-50%, -50%);
+      display: none;
+      cursor: crosshair;
+      touch-action: manipulation;
+    }
+
+    #mensagem {
+      margin-top: 18px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🎯 Tiro ao Alvo</h1>
+
+  <div class="painel">
+    <div>Pontos: <span class="valor" id="pontos">0</span></div>
+    <div>Tempo: <span class="valor" id="tempo">30</span>s</div>
+    <div>Tamanho: <span class="valor" id="tamanho">60</span>px</div>
+  </div>
+
+  <button id="botao">Começar jogo</button>
+
+  <div id="campo">
+    <div id="alvo"></div>
+  </div>
+
+  <p id="mensagem">Clique em Começar jogo para jogar!</p>
+
+  <script>
+    const campo = document.getElementById("campo");
+    const alvo = document.getElementById("alvo");
+    const botao = document.getElementById("botao");
+    const pontosTexto = document.getElementById("pontos");
+    const tempoTexto = document.getElementById("tempo");
+    const tamanhoTexto = document.getElementById("tamanho");
+    const mensagem = document.getElementById("mensagem");
+
+    let pontos = 0;
+    let tempo = 30;
+    let tamanho = 60;
+    let jogando = false;
+    let intervalo;
+
+    function atualizarTela() {
+      pontosTexto.textContent = pontos;
+      tempoTexto.textContent = tempo;
+      tamanhoTexto.textContent = tamanho;
+    }
+
+    function moverAlvo() {
+      const margem = tamanho / 2 + 5;
+
+      const x = margem + Math.random() *
+        (campo.clientWidth - margem * 2);
+
+      const y = margem + Math.random() *
+        (campo.clientHeight - margem * 2);
+
+      alvo.style.left = x + "px";
+      alvo.style.top = y + "px";
+    }
+
+    function definirTamanho() {
+      alvo.style.width = tamanho + "px";
+      alvo.style.height = tamanho + "px";
+    }
+
+    function iniciarJogo() {
+      clearInterval(intervalo);
+
+      pontos = 0;
+      tempo = 30;
+      tamanho = 60;
+      jogando = true;
+
+      atualizarTela();
+      definirTamanho();
+      moverAlvo();
+
+      alvo.style.display = "block";
+      botao.textContent = "Reiniciar jogo";
+      mensagem.textContent = "Acerte os alvos! Cada acerto tira 1 segundo.";
+
+      intervalo = setInterval(() => {
+        tempo--;
+        atualizarTela();
+
+        if (tempo <= 0) {
+          terminarJogo();
+        }
+      }, 1000);
+    }
+
+    alvo.addEventListener("pointerdown", (evento) => {
+      evento.stopPropagation();
+
+      if (!jogando) return;
+
+      pontos += 10;
+      tempo -= 1;
+
+      // O alvo diminui a cada acerto, até 15 pixels.
+      tamanho = Math.max(15, tamanho - 4);
+
+      atualizarTela();
+      definirTamanho();
+
+      if (tempo <= 0) {
+        terminarJogo();
+        return;
+      }
+
+      moverAlvo();
+
+      mensagem.textContent =
+        "Acertou! +10 pontos. O alvo ficou menor!";
+
+      if (tamanho === 15) {
+        mensagem.textContent =
+          "Modo difícil! O alvo chegou ao tamanho mínimo!";
+      }
+    });
+
+    campo.addEventListener("pointerdown", (evento) => {
+      if (jogando && evento.target !== alvo) {
+        mensagem.textContent = "Errou! Tente acertar o alvo.";
+      }
+    });
+
+    function terminarJogo() {
+      jogando = false;
+      clearInterval(intervalo);
+      alvo.style.display = "none";
+      tempo = Math.max(0, tempo);
+      atualizarTela();
+
+      botao.textContent = "Jogar novamente";
+      mensagem.textContent =
+        "⏰ Fim de jogo! Sua pontuação foi " + pontos + " pontos!";
+    }
+
+    botao.addEventListener("click", iniciarJogo);
+  </script>
+</body>
+</html>
