@@ -725,3 +725,20 @@ function endGame() {
   document.getElementById("result").textContent = result;
 }
 </script>
+function createRoom() {
+  room = Math.random().toString(36)
+    .substring(2, 8).toUpperCase();
+
+  const created = document.getElementById("created");
+  const roomCode = document.getElementById("roomCode");
+
+  created.classList.remove("hidden");
+  roomCode.textContent = "CÓDIGO: " + room;
+
+  document.getElementById("message").textContent =
+    "Sala criada com sucesso!";
+
+  document.getElementById("lobby").scrollIntoView({
+    behavior: "smooth"
+  });
+}
