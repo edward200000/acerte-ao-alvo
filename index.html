@@ -3635,3 +3635,1898 @@
     .prog-labels { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; margin-bottom: 5px; color: var(--text-dim); }
     .prog-track { height: 12px; background: #141a26; border-radius: 3px;
 
+                 <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>PIXEL STREET DRAG // Pixel Car Racer Legends</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,700;1,700&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #090b10;
+      --panel-bg: rgba(15, 19, 28, 0.96);
+      --panel-border: #2a3346;
+      --neon-cyan: #00f0ff;
+      --neon-pink: #ff2a6d;
+      --neon-amber: #ffaa00;
+      --neon-green: #05ffa1;
+      --neon-purple: #b537f2;
+      --text-main: #eef2f7;
+      --text-dim: #7f8ea3;
+      --font-pixel: 'Press Start 2P', monospace;
+      --font-hud: 'Chakra Petch', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-hud);
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* TOP BAR */
+    header.top-bar {
+      height: 54px;
+      background: linear-gradient(180deg, #161b26 0%, #0d1017 100%);
+      border-bottom: 2px solid #2b3548;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      z-index: 20;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.65);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-badge {
+      background: var(--neon-pink);
+      color: #fff;
+      font-family: var(--font-pixel);
+      font-size: 9px;
+      padding: 5px 8px;
+      border-radius: 3px;
+      box-shadow: 0 0 10px rgba(255, 42, 109, 0.5);
+    }
+
+    .brand-title {
+      font-family: var(--font-pixel);
+      font-size: 12px;
+      color: #fff;
+      text-shadow: 2px 2px 0 #000, 0 0 10px rgba(0, 240, 255, 0.4);
+      letter-spacing: 0.5px;
+    }
+
+    .top-stats {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .stat-pill {
+      background: #0a0d13;
+      border: 1px solid #2e384d;
+      padding: 5px 12px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .stat-pill.money {
+      color: var(--neon-green);
+      border-color: rgba(5, 255, 161, 0.35);
+    }
+
+    .stat-pill.tier {
+      color: var(--neon-cyan);
+      border-color: rgba(0, 240, 255, 0.35);
+    }
+
+    .btn-icon {
+      background: #171d29;
+      border: 1px solid #354159;
+      color: var(--text-main);
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: var(--font-hud);
+      font-weight: 700;
+      font-size: 12px;
+      transition: all 0.15s;
+    }
+
+    .btn-icon:hover {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+    }
+
+    /* MAIN VIEWPORT */
+    main#app-container {
+      flex: 1;
+      position: relative;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* GARAGE VIEW */
+    #garage-view {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 14px;
+      padding: 14px;
+      background:
+        radial-gradient(circle at 28% 35%, rgba(0, 240, 255, 0.06), transparent 55%),
+        radial-gradient(circle at 80% 70%, rgba(255, 42, 109, 0.06), transparent 50%),
+        #090b10;
+    }
+
+    @media (max-width: 960px) {
+      #garage-view {
+        grid-template-columns: 1fr;
+        overflow-y: auto;
+      }
+    }
+
+    /* LEFT: SHOWROOM */
+    .showroom-panel {
+      background: var(--panel-bg);
+      border: 2px solid var(--panel-border);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 14px;
+      position: relative;
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.6);
+    }
+
+    .car-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .car-selector {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .nav-car-btn {
+      background: #171d29;
+      border: 1px solid #3c4863;
+      color: #fff;
+      width: 34px;
+      height: 34px;
+      border-radius: 4px;
+      font-family: var(--font-pixel);
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .nav-car-btn:hover {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+    }
+
+    .car-title-box {
+      flex: 1;
+    }
+
+    .car-title-box h2 {
+      font-family: var(--font-pixel);
+      font-size: 12px;
+      color: #fff;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .car-sub {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag-drive {
+      background: rgba(0, 240, 255, 0.14);
+      border: 1px solid rgba(0, 240, 255, 0.45);
+      color: var(--neon-cyan);
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+    }
+
+    .tag-kit {
+      background: rgba(255, 42, 109, 0.14);
+      border: 1px solid rgba(255, 42, 109, 0.45);
+      color: var(--neon-pink);
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+    }
+
+    .car-canvas-wrap {
+      flex: 1;
+      min-height: 175px;
+      margin: 8px 0;
+      background: #07090e;
+      border: 2px solid #222a3a;
+      border-radius: 4px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #garage-canvas {
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+    }
+
+    .rev-btn {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(15, 19, 28, 0.9);
+      border: 1px solid var(--neon-amber);
+      color: var(--neon-amber);
+      font-family: var(--font-pixel);
+      font-size: 8px;
+      padding: 7px 9px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.1s;
+    }
+
+    .rev-btn:active, .rev-btn.active {
+      background: var(--neon-amber);
+      color: #000;
+      box-shadow: 0 0 15px rgba(255, 170, 0, 0.6);
+    }
+
+    .car-owned-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-family: var(--font-pixel);
+      font-size: 7px;
+      padding: 4px 8px;
+      border-radius: 3px;
+      background: rgba(5, 255, 161, 0.16);
+      border: 1px solid var(--neon-green);
+      color: var(--neon-green);
+    }
+
+    .car-owned-badge.locked {
+      background: rgba(255, 170, 0, 0.16);
+      border-color: var(--neon-amber);
+      color: var(--neon-amber);
+    }
+
+    /* SPECS GRID */
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .spec-box {
+      background: #0c0f16;
+      border: 1px solid #242d3e;
+      padding: 6px 8px;
+      border-radius: 4px;
+    }
+
+    .spec-label {
+      font-size: 9px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .spec-val {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 2px;
+    }
+
+    .spec-val span {
+      font-size: 10px;
+      color: var(--neon-cyan);
+    }
+
+    /* MAPS & DIFFICULTY CONTROLS */
+    .config-row-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .config-box {
+      background: #0c0f16;
+      border: 1px solid #283246;
+      border-radius: 5px;
+      padding: 7px 9px;
+    }
+
+    .config-header {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-dim);
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .config-select {
+      width: 100%;
+      background: #141923;
+      border: 1px solid #2c364b;
+      color: #fff;
+      font-family: var(--font-hud);
+      font-weight: 700;
+      font-size: 11px;
+      padding: 6px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .diff-options-mini {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+    }
+
+    .diff-btn {
+      background: #141923;
+      border: 1px solid #2c364b;
+      color: var(--text-dim);
+      padding: 5px 2px;
+      border-radius: 3px;
+      font-family: var(--font-hud);
+      font-weight: 700;
+      font-size: 9px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .diff-btn.active[data-diff="easy"] { background: rgba(5,255,161,0.15); border-color: var(--neon-green); color: var(--neon-green); }
+    .diff-btn.active[data-diff="medium"] { background: rgba(0,240,255,0.15); border-color: var(--neon-cyan); color: var(--neon-cyan); }
+    .diff-btn.active[data-diff="hard"] { background: rgba(255,170,0,0.15); border-color: var(--neon-amber); color: var(--neon-amber); }
+    .diff-btn.active[data-diff="legend"] { background: rgba(255,42,109,0.18); border-color: var(--neon-pink); color: var(--neon-pink); }
+
+    /* RACE LAUNCH CONTROLS */
+    .race-launch-bar {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .dist-select {
+      background: #111622;
+      border: 1px solid #35425c;
+      color: #fff;
+      font-family: var(--font-hud);
+      font-weight: 700;
+      font-size: 12px;
+      padding: 0 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn-primary-action {
+      flex: 1;
+      background: linear-gradient(135deg, #ff2a6d 0%, #d91b57 100%);
+      border: 2px solid #ff6b99;
+      color: #fff;
+      font-family: var(--font-pixel);
+      font-size: 10px;
+      padding: 12px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      text-shadow: 1px 1px 0 #000;
+      box-shadow: 0 0 16px rgba(255, 42, 109, 0.45);
+      transition: transform 0.1s, filter 0.15s;
+    }
+
+    .btn-primary-action:hover { filter: brightness(1.1); }
+    .btn-primary-action:active { transform: translateY(2px); }
+
+    .btn-primary-action.buy-mode {
+      background: linear-gradient(135deg, #05ffa1 0%, #00b874 100%);
+      border-color: #8affd4;
+      color: #041a11;
+      text-shadow: none;
+      box-shadow: 0 0 16px rgba(5, 255, 161, 0.4);
+    }
+
+    /* RIGHT: TUNING PANEL */
+    .tuning-panel {
+      background: var(--panel-bg);
+      border: 2px solid var(--panel-border);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .tabs-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: #0b0e14;
+      border-bottom: 2px solid #263042;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      border-right: 1px solid #1e2636;
+      color: var(--text-dim);
+      font-family: var(--font-pixel);
+      font-size: 8px;
+      padding: 12px 4px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .tab-btn:last-child { border-right: none; }
+    .tab-btn.active {
+      background: #161c28;
+      color: var(--neon-cyan);
+      box-shadow: inset 0 -3px 0 var(--neon-cyan);
+    }
+
+    .tab-content {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      display: none;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .tab-content.active { display: flex; }
+
+    /* UPGRADE CARDS */
+    .upgrade-card {
+      background: #0d111a;
+      border: 1px solid #263045;
+      border-radius: 5px;
+      padding: 9px 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .upg-info h4 { font-size: 13px; color: #fff; margin-bottom: 2px; }
+    .upg-info p { font-size: 10px; color: var(--text-dim); }
+
+    .stage-pips { display: flex; gap: 4px; margin-top: 4px; }
+    .pip { width: 16px; height: 4px; background: #1f2738; border-radius: 2px; }
+    .pip.filled { background: var(--neon-cyan); box-shadow: 0 0 5px var(--neon-cyan); }
+
+    .btn-upgrade {
+      background: #172030;
+      border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      font-family: var(--font-hud);
+      font-weight: 700;
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      min-width: 88px;
+      text-align: center;
+    }
+
+    .btn-upgrade:hover:not(:disabled) { background: var(--neon-cyan); color: #05080d; }
+    .btn-upgrade:disabled { border-color: #2f394d; color: #5a6780; cursor: not-allowed; }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--neon-amber);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-top: 2px;
+    }
+
+    .kit-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .kit-card {
+      background: #0d111a;
+      border: 1px solid #283247;
+      border-radius: 5px;
+      padding: 7px 9px;
+      cursor: pointer;
+      transition: 0.15s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 3px;
+    }
+    .kit-card:hover { border-color: #53668c; }
+    .kit-card.equipped { border-color: var(--neon-green); background: rgba(5, 255, 161, 0.08); }
+    .kit-card-top { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 11px; color: #fff; }
+    .kit-card-sub { font-size: 10px; color: var(--text-dim); }
+    .kit-price { font-size: 10px; font-weight: 700; color: var(--neon-amber); }
+    .kit-card.owned .kit-price { color: var(--neon-cyan); }
+    .kit-card.equipped .kit-price { color: var(--neon-green); }
+
+    .swatches-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; }
+    .swatch { aspect-ratio: 1; border-radius: 4px; border: 2px solid #2a3447; cursor: pointer; transition: transform 0.1s; }
+    .swatch:hover { transform: scale(1.1); }
+    .swatch.active { border-color: #fff; box-shadow: 0 0 8px #fff; }
+
+    .custom-color-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #0d111a;
+      border: 1px solid #263045;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .pill-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+    .pill-opt {
+      background: #0d111a;
+      border: 1px solid #2a3447;
+      color: var(--text-dim);
+      padding: 6px 4px;
+      border-radius: 4px;
+      font-family: var(--font-hud);
+      font-weight: 700;
+      font-size: 10px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .pill-opt.active { border-color: var(--neon-cyan); color: var(--neon-cyan); background: rgba(0, 240, 255, 0.1); }
+
+    /* RACE VIEW */
+    #race-view {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      background: #05070b;
+      z-index: 30;
+    }
+    #race-view.active { display: flex; }
+    #race-canvas { flex: 1; width: 100%; height: 100%; display: block; image-rendering: pixelated; }
+
+    .race-top-hud {
+      position: absolute;
+      top: 10px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+
+    .progress-tracker {
+      background: rgba(10, 13, 20, 0.88);
+      border: 1px solid #323e57;
+      border-radius: 5px;
+      padding: 8px 12px;
+      width: 310px;
+    }
+
+    .prog-labels { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; margin-bottom: 5px; color: var(--text-dim); }
+    .prog-track { height: 10px; background: #141a26; border-radius: 3px; position: relative; overflow: hidden; border: 1px solid #293347; }
+    .prog-marker { position: absolute; top: 1px; width: 8px; height: 8px; border-radius: 2px; transform: translateX(-50%); }
+    .prog-marker.rival { background: var(--neon-pink); box-shadow: 0 0 6px var(--neon-pink); }
+    .prog-marker.player { background: var(--neon-cyan); box-shadow: 0 0 6px var(--neon-cyan); z-index: 2; }
+
+    .shift-banner {
+      font-family: var(--font-pixel);
+      font-size: 11px;
+      padding: 7px 12px;
+      border-radius: 4px;
+      background: rgba(10, 13, 20, 0.9);
+      border: 2px solid var(--neon-green);
+      color: var(--neon-green);
+      text-shadow: 0 0 8px rgba(5, 255, 161, 0.6);
+      opacity: 0;
+      transform: translateY(-6px);
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .shift-banner.show { opacity: 1; transform: translateY(0); }
+    .shift-banner.warn { border-color: var(--neon-pink); color: var(--neon-pink); text-shadow: 0 0 8px rgba(255, 42, 109, 0.6); }
+
+    /* DASHBOARD COCKPIT */
+    .cockpit-hud {
+      height: 156px;
+      background: linear-gradient(180deg, #10141e 0%, #080a0f 100%);
+      border-top: 2px solid #2d384f;
+      display: grid;
+      grid-template-columns: 1fr 1.25fr 1fr;
+      align-items: center;
+      padding: 8px 16px;
+      gap: 12px;
+    }
+
+    .pedals-left, .shifter-right { display: flex; gap: 10px; height: 100%; align-items: center; }
+    .shifter-right { justify-content: flex-end; }
+
+    .ctrl-btn {
+      height: 102px;
+      min-width: 82px;
+      border-radius: 6px;
+      border: 2px solid #384561;
+      background: #151b26;
+      color: #fff;
+      font-family: var(--font-pixel);
+      font-size: 9px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .ctrl-btn span.key-hint { font-family: var(--font-hud); font-size: 10px; color: var(--text-dim); }
+    .ctrl-btn.gas { border-color: var(--neon-green); color: var(--neon-green); min-width: 108px; }
+    .ctrl-btn.gas.pressed { background: rgba(5, 255, 161, 0.24); box-shadow: 0 0 16px rgba(5, 255, 161, 0.45); }
+    .ctrl-btn.nos { border-color: var(--neon-cyan); color: var(--neon-cyan); }
+    .ctrl-btn.nos.pressed { background: rgba(0, 240, 255, 0.25); box-shadow: 0 0 16px rgba(0, 240, 255, 0.5); }
+    .ctrl-btn.shift-up { border-color: var(--neon-amber); color: var(--neon-amber); min-width: 94px; }
+
+    .cluster-center { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
+    .shift-lights { display: flex; gap: 5px; background: #07090d; padding: 4px 8px; border-radius: 12px; border: 1px solid #263044; }
+    .s-led { width: 10px; height: 10px; border-radius: 50%; background: #1c2230; }
+    .s-led.on-green { background: #05ffa1; box-shadow: 0 0 6px #05ffa1; }
+    .s-led.on-amber { background: #ffaa00; box-shadow: 0 0 6px #ffaa00; }
+    .s-led.on-red { background: #ff2a6d; box-shadow: 0 0 8px #ff2a6d; }
+
+    .gauges-row { display: flex; align-items: center; gap: 14px; }
+    .digital-readout { text-align: center; min-width: 72px; }
+    .digital-readout .val { font-family: var(--font-pixel); font-size: 16px; color: #fff; }
+    .digital-readout .lbl { font-size: 9px; color: var(--text-dim); font-weight: 700; margin-top: 2px; }
+
+    .gear-box {
+      width: 48px;
+      height: 56px;
+      background: #07090e;
+      border: 2px solid var(--neon-amber);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 10px rgba(255, 170, 0, 0.2);
+    }
+    .gear-box .gear-num { font-family: var(--font-pixel); font-size: 20px; color: var(--neon-amber); }
+    .gear-box .gear-lbl { font-size: 8px; color: var(--text-dim); margin-top: 2px; }
+
+    .rpm-bar-wrap { width: 100%; max-width: 320px; height: 12px; background: #080b11; border: 1px solid #2d384f; border-radius: 3px; position: relative; overflow: hidden; }
+    .rpm-fill { height: 100%; width: 10%; background: linear-gradient(90deg, #05ffa1 0%, #ffaa00 78%, #ff2a6d 93%); transition: width 0.04s linear; }
+
+    .mini-bars { display: flex; gap: 10px; width: 100%; max-width: 320px; font-size: 9px; font-weight: 700; }
+    .mini-bar-item { flex: 1; display: flex; align-items: center; gap: 5px; }
+    .mini-track { flex: 1; height: 5px; background: #141a26; border-radius: 2px; overflow: hidden; }
+    .mini-fill-boost { height: 100%; width: 0%; background: var(--neon-amber); }
+    .mini-fill-nos { height: 100%; width: 100%; background: var(--neon-cyan); }
+
+    /* RESULTS MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 7, 12, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      padding: 16px;
+    }
+    .modal-overlay.show { display: flex; }
+    .result-card {
+      background: #111622;
+      border: 2px solid var(--neon-cyan);
+      border-radius: 8px;
+      width: 100%;
+      max-width: 450px;
+      padding: 18px;
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.25);
+      text-align: center;
+    }
+    .result-title { font-family: var(--font-pixel); font-size: 15px; margin-bottom: 6px; }
+    .result-title.win { color: var(--neon-green); }
+    .result-title.lose { color: var(--neon-pink); }
+    .result-sub { font-size: 12px; color: var(--text-dim); margin-bottom: 12px; }
+
+    .slip-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; background: #0a0d14; border: 1px solid #253045; font-size: 12px; }
+    .slip-table th, .slip-table td { padding: 7px 9px; border-bottom: 1px solid #1c2436; }
+    .slip-table th { color: var(--text-dim); font-size: 10px; text-transform: uppercase; }
+
+    .reward-banner {
+      background: rgba(5, 255, 161, 0.12);
+      border: 1px solid var(--neon-green);
+      color: var(--neon-green);
+      font-family: var(--font-pixel);
+      font-size: 11px;
+      padding: 9px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+    .modal-actions { display: flex; gap: 8px; }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <header class="top-bar">
+    <div class="brand">
+      <span class="brand-badge">PCR EDITION</span>
+      <span class="brand-title">PIXEL STREET DRAG // 27 CARS</span>
+    </div>
+    <div class="top-stats">
+      <div class="stat-pill tier" id="hud-diff-pill">DIFICULDADE: AMADOR</div>
+      <div class="stat-pill money" id="hud-money">$ 50,000</div>
+      <button class="btn-icon" id="btn-mute">SOM: ON</button>
+    </div>
+  </header>
+
+  <main id="app-container">
+    <!-- GARAGE VIEW -->
+    <section id="garage-view">
+      <!-- LEFT SHOWROOM -->
+      <div class="showroom-panel">
+        <div class="car-header">
+          <div class="car-selector">
+            <button class="nav-car-btn" id="btn-prev-car">&lt;</button>
+            <div class="car-title-box">
+              <h2 id="car-name">SKYLINE GT-R R32</h2>
+              <div class="car-sub">
+                <span id="car-engine-desc">2.6L RB26DETT Twin-Turbo</span>
+                <span class="tag-drive" id="car-drive-tag">AWD</span>
+                <span class="tag-kit" id="car-kit-tag">KIT: STOCK</span>
+              </div>
+            </div>
+            <button class="nav-car-btn" id="btn-next-car">&gt;</button>
+          </div>
+        </div>
+
+        <div class="car-canvas-wrap">
+          <div class="car-owned-badge" id="car-owned-badge">NA GARAGEM</div>
+          <canvas id="garage-canvas" width="460" height="190"></canvas>
+          <button class="rev-btn" id="btn-rev-test">ACELERAR</button>
+        </div>
+
+        <div class="specs-grid">
+          <div class="spec-box"><div class="spec-label">Potência</div><div class="spec-val" id="spec-hp">340 <span>HP</span></div></div>
+          <div class="spec-box"><div class="spec-label">Peso / Aero</div><div class="spec-val" id="spec-weight">1430 <span>KG</span></div></div>
+          <div class="spec-box"><div class="spec-label">Boost</div><div class="spec-val" id="spec-boost">1.1 <span>BAR</span></div></div>
+          <div class="spec-box"><div class="spec-label">Aderência</div><div class="spec-val" id="spec-grip">82 <span>%</span></div></div>
+        </div>
+
+        <!-- MAPA, CLIMA E DIFICULDADE -->
+        <div class="config-row-grid">
+          <div class="config-box">
+            <div class="config-header"><span>PISTA / MAPA & CLIMA</span></div>
+            <select class="config-select" id="map-select">
+              <option value="tokyo_night">Tokyo Wangan (Noite Neon)</option>
+              <option value="shuto_dusk">Shuto Expressway (Pôr do Sol)</option>
+              <option value="mount_dawn">Monte Akina (Amanhecer)</option>
+              <option value="tokyo_rain">Tokyo Wangan (Noite Chuvosa)</option>
+              <option value="winter_snow">Hokkaido (Inverno Neve)</option>
+              <option value="spring_day">Primavera Sakura (Dia)</option>
+            </select>
+          </div>
+          <div class="config-box">
+            <div class="config-header"><span>DIFICULDADE DA RUA</span></div>
+            <div class="diff-options-mini">
+              <button class="diff-btn" data-diff="easy">FÁCIL</button>
+              <button class="diff-btn active" data-diff="medium">AMAD</button>
+              <button class="diff-btn" data-diff="hard">PRO</button>
+              <button class="diff-btn" data-diff="legend">LENDA</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="race-launch-bar">
+          <select class="dist-select" id="race-distance">
+            <option value="402">1/4 MILHA (402m)</option>
+            <option value="804">1/2 MILHA (804m)</option>
+          </select>
+          <button class="btn-primary-action" id="btn-main-action">CORRER NA RUA</button>
+        </div>
+      </div>
+
+      <!-- RIGHT TUNING PANEL -->
+      <div class="tuning-panel">
+        <div class="tabs-bar">
+          <button class="tab-btn active" data-tab="tab-mech">MECÂNICA</button>
+          <button class="tab-btn" data-tab="tab-kits">BODY KITS</button>
+          <button class="tab-btn" data-tab="tab-paint">PINTURA & RODAS</button>
+        </div>
+
+        <!-- TAB 1: MECHANICS -->
+        <div class="tab-content active" id="tab-mech"></div>
+
+        <!-- TAB 2: BODY KITS -->
+        <div class="tab-content" id="tab-kits">
+          <div class="section-label">Kits de Carroceria (Widebody)</div>
+          <div class="kit-grid" id="bodykit-list"></div>
+          <div class="section-label">Aerofólio Traseiro</div>
+          <div class="pill-group" id="spoiler-list"></div>
+          <div class="section-label">Suspensão (Stance)</div>
+          <div class="pill-group" id="stance-list"></div>
+          <div class="section-label">Intercooler Frontal</div>
+          <div class="pill-group" id="intercooler-list"></div>
+        </div>
+
+        <!-- TAB 3: PAINT & WHEELS -->
+        <div class="tab-content" id="tab-paint">
+          <div class="section-label">Cor da Carroceria</div>
+          <div class="swatches-grid" id="paint-swatches"></div>
+          <div class="custom-color-row">
+            <span>Seletor RGB Livre:</span>
+            <input type="color" id="custom-color-picker" value="#1e40af" />
+          </div>
+          <div class="section-label">Acabamento</div>
+          <div class="pill-group" id="finish-list"></div>
+          <div class="section-label">Faixas & Capô</div>
+          <div class="pill-group" id="livery-list"></div>
+          <div class="section-label">Rodas</div>
+          <div class="pill-group" id="wheel-list"></div>
+          <div class="section-label">Pinças de Freio</div>
+          <div class="pill-group" id="caliper-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RACE VIEW -->
+    <section id="race-view">
+      <canvas id="race-canvas"></canvas>
+      <div class="race-top-hud">
+        <div class="progress-tracker">
+          <div class="prog-labels">
+            <span id="race-dist-label">1/4 MILHA (402m)</span>
+            <span id="race-timer">0.000 s</span>
+          </div>
+          <div class="prog-track">
+            <div class="prog-marker rival" id="prog-rival" style="left: 2%;"></div>
+            <div class="prog-marker player" id="prog-player" style="left: 2%;"></div>
+          </div>
+        </div>
+        <div class="shift-banner" id="shift-banner">PERFECT SHIFT!</div>
+        <button class="btn-icon" id="btn-abort-race" style="pointer-events: auto;">SAIR</button>
+      </div>
+
+      <div class="cockpit-hud">
+        <div class="pedals-left">
+          <button class="ctrl-btn gas" id="btn-gas">ACELERAR<span class="key-hint">[D / →]</span></button>
+          <button class="ctrl-btn nos" id="btn-nos">NITRO<span class="key-hint">[ESPAÇO]</span></button>
+        </div>
+        <div class="cluster-center">
+          <div class="shift-lights" id="shift-lights">
+            <div class="s-led"></div><div class="s-led"></div><div class="s-led"></div><div class="s-led"></div><div class="s-led"></div><div class="s-led"></div>
+          </div>
+          <div class="gauges-row">
+            <div class="digital-readout"><div class="val" id="hud-speed">0</div><div class="lbl">KM/H</div></div>
+            <div class="gear-box"><div class="gear-num" id="hud-gear">N</div><div class="gear-lbl">MARCHA</div></div>
+            <div class="digital-readout"><div class="val" id="hud-rpm">1000</div><div class="lbl">RPM</div></div>
+          </div>
+          <div class="rpm-bar-wrap">
+            <div class="rpm-sweet-zone" style="position:absolute; top:0; bottom:0; left:84%; width:9%; background:rgba(5,255,161,0.35);"></div>
+            <div class="rpm-fill" id="rpm-fill"></div>
+          </div>
+          <div class="mini-bars">
+            <div class="mini-bar-item"><span style="color: var(--neon-amber);">TURBO</span><div class="mini-track"><div class="mini-fill-boost" id="boost-fill"></div></div></div>
+            <div class="mini-bar-item"><span style="color: var(--neon-cyan);">NOS</span><div class="mini-track"><div class="mini-fill-nos" id="nos-fill"></div></div></div>
+          </div>
+        </div>
+        <div class="shifter-right">
+          <button class="ctrl-btn" id="btn-shift-down">MARCHA -<span class="key-hint">[S / ↓]</span></button>
+          <button class="ctrl-btn shift-up" id="btn-shift-up">MARCHA +<span class="key-hint">[W / ↑]</span></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- RESULTS MODAL -->
+  <div class="modal-overlay" id="result-modal">
+    <div class="result-card">
+      <h2 class="result-title win" id="res-title">VITÓRIA NA RUA!</h2>
+      <p class="result-sub" id="res-subtitle">Você cruzou a linha de chegada na frente!</p>
+      <table class="slip-table">
+        <thead>
+          <tr><th>Métrica</th><th style="color: var(--neon-cyan);">Você</th><th style="color: var(--neon-pink);">Rival</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Tempo Final (ET)</td><td id="res-player-et">10.420 s</td><td id="res-rival-et">10.890 s</td></tr>
+          <tr><td>Reação (RT)</td><td id="res-player-rt">0.145 s</td><td id="res-rival-rt">0.250 s</td></tr>
+          <tr><td>Velocidade Final</td><td id="res-player-trap">238 km/h</td><td id="res-rival-trap">224 km/h</td></tr>
+        </tbody>
+      </table>
+      <div class="reward-banner" id="res-reward">+ $ 4,500</div>
+      <div class="modal-actions">
+        <button class="btn-icon" style="flex:1; padding: 12px;" id="btn-back-garage">GARAGEM</button>
+        <button class="btn-primary-action" style="flex:1;" id="btn-race-again">REVANCHE</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================
+    // 27 CARS DATABASE (JDM, MUSCLE, EURO, SUPERCAR)
+    // =========================================================
+    const CARS = [
+      { id: 'gtr32', name: 'SKYLINE GT-R R32', engine: '2.6L RB26DETT Twin-Turbo', drive: 'AWD', price: 0, baseHp: 330, baseWeight: 1430, baseGrip: 84, redline: 8400, maxBoost: 1.15, defaultColor: '#253342', sound: { baseFreq: 46, type: 'sawtooth', subType: 'triangle', cylinders: 6, turboFlutter: true, whine: 0.08, rasp: 1.4 } },
+      { id: 'civic_si', name: 'CIVIC EK9 TYPE-R', engine: '1.6L B16B VTEC Aspirado', drive: 'FWD', price: 12000, baseHp: 185, baseWeight: 1050, baseGrip: 82, redline: 8800, maxBoost: 0.0, defaultColor: '#f8fafc', sound: { baseFreq: 68, type: 'sawtooth', subType: 'sine', cylinders: 4, turboFlutter: false, whine: 0.02, rasp: 2.3 } },
+      { id: 'silvia_s15', name: 'SILVIA S15 SPEC-R', engine: '2.0L SR20DET Turbo', drive: 'RWD', price: 18000, baseHp: 250, baseWeight: 1240, baseGrip: 80, redline: 7500, maxBoost: 1.1, defaultColor: '#eab308', sound: { baseFreq: 52, type: 'sawtooth', subType: 'square', cylinders: 4, turboFlutter: true, whine: 0.12, rasp: 1.7 } },
+      { id: 'rx7_fd', name: 'RX-7 FD3S SPIRIT R', engine: '1.3L 13B-REW Sequential Twin', drive: 'RWD', price: 24000, baseHp: 280, baseWeight: 1270, baseGrip: 85, redline: 8200, maxBoost: 1.2, defaultColor: '#991b1b', sound: { baseFreq: 75, type: 'sine', subType: 'sawtooth', cylinders: 2, turboFlutter: true, whine: 0.15, rasp: 2.8 } },
+      { id: 'supra_mk4', name: 'SUPRA RZ MK4', engine: '3.0L 2JZ-GTE Twin-Turbo', drive: 'RWD', price: 32000, baseHp: 325, baseWeight: 1510, baseGrip: 83, redline: 7200, maxBoost: 1.3, defaultColor: '#ff7300', sound: { baseFreq: 44, type: 'sawtooth', subType: 'square', cylinders: 6, turboFlutter: true, whine: 0.16, rasp: 1.5 } },
+      { id: 'gtr34', name: 'SKYLINE GT-R R34 Z-TUNE', engine: '2.6L RB26 Nismo Twin-Turbo', drive: 'AWD', price: 42000, baseHp: 395, baseWeight: 1480, baseGrip: 88, redline: 8800, maxBoost: 1.35, defaultColor: '#0055d4', sound: { baseFreq: 49, type: 'sawtooth', subType: 'square', cylinders: 6, turboFlutter: true, whine: 0.14, rasp: 1.6 } },
+      { id: 'evo9', name: 'LANCER EVO IX FQ-360', engine: '2.0L 4G63 MIVEC Turbo', drive: 'AWD', price: 29000, baseHp: 360, baseWeight: 1410, baseGrip: 89, redline: 7600, maxBoost: 1.4, defaultColor: '#dc2626', sound: { baseFreq: 50, type: 'sawtooth', subType: 'triangle', cylinders: 4, turboFlutter: true, whine: 0.13, rasp: 1.8 } },
+      { id: 'subaru_sti', name: 'IMPREZA WRX STI 22B', engine: '2.2L EJ22G Boxer Turbo', drive: 'AWD', price: 31000, baseHp: 280, baseWeight: 1270, baseGrip: 90, redline: 7900, maxBoost: 1.25, defaultColor: '#1d4ed8', sound: { baseFreq: 38, type: 'square', subType: 'sawtooth', cylinders: 4, turboFlutter: true, whine: 0.1, bassBoxer: true, rasp: 1.3 } },
+      { id: 'nsx_type_r', name: 'HONDA NSX-R NA2', engine: '3.2L C32B V6 VTEC', drive: 'RWD', price: 48000, baseHp: 290, baseWeight: 1230, baseGrip: 89, redline: 8500, maxBoost: 0.0, defaultColor: '#f8fafc', sound: { baseFreq: 62, type: 'sawtooth', subType: 'sine', cylinders: 6, turboFlutter: false, whine: 0.04, rasp: 2.2 } },
+      { id: 's2000', name: 'HONDA S2000 AP2', engine: '2.2L F22C VTEC', drive: 'RWD', price: 21000, baseHp: 240, baseWeight: 1250, baseGrip: 86, redline: 8900, maxBoost: 0.0, defaultColor: '#e11d48', sound: { baseFreq: 65, type: 'sawtooth', subType: 'triangle', cylinders: 4, turboFlutter: false, whine: 0.03, rasp: 2.4 } },
+
+      // Muscle & American
+      { id: 'mustang_fox', name: 'MUSTANG FOXBODY 5.0', engine: '5.0L Windsor V8 Supercharged', drive: 'RWD', price: 15000, baseHp: 265, baseWeight: 1390, baseGrip: 76, redline: 6200, maxBoost: 0.9, defaultColor: '#1e293b', sound: { baseFreq: 33, type: 'square', subType: 'sawtooth', cylinders: 8, turboFlutter: false, whine: 0.18, rasp: 1.1 } },
+      { id: 'chevelle', name: 'CHEVROLET CHEVELLE SS 454', engine: '7.4L LS6 Big Block V8', drive: 'RWD', price: 38000, baseHp: 450, baseWeight: 1680, baseGrip: 73, redline: 5800, maxBoost: 0.0, defaultColor: '#b91c1c', sound: { baseFreq: 28, type: 'square', subType: 'square', cylinders: 8, turboFlutter: false, whine: 0.0, rasp: 0.9 } },
+      { id: 'charger_rt', name: 'DODGE CHARGER R/T 1970', engine: '7.0L HEMI V8 Elephant', drive: 'RWD', price: 44000, baseHp: 425, baseWeight: 1750, baseGrip: 72, redline: 6000, maxBoost: 0.0, defaultColor: '#f59e0b', sound: { baseFreq: 27, type: 'square', subType: 'sawtooth', cylinders: 8, turboFlutter: false, whine: 0.0, rasp: 1.0 } },
+      { id: 'corvette_c6', name: 'CORVETTE Z06 C6', engine: '7.0L LS7 V8 Naturally Aspirated', drive: 'RWD', price: 55000, baseHp: 505, baseWeight: 1410, baseGrip: 88, redline: 7100, maxBoost: 0.0, defaultColor: '#172554', sound: { baseFreq: 32, type: 'sawtooth', subType: 'square', cylinders: 8, turboFlutter: false, whine: 0.05, rasp: 1.9 } },
+      { id: 'gt500', name: 'MUSTANG SHELBY GT500', engine: '5.2L Predator V8 Supercharged', drive: 'RWD', price: 62000, baseHp: 560, baseWeight: 1690, baseGrip: 84, redline: 7600, maxBoost: 1.25, defaultColor: '#d91e36', sound: { baseFreq: 34, type: 'square', subType: 'sawtooth', cylinders: 8, turboFlutter: false, whine: 0.32, rasp: 1.2 } },
+      { id: 'camaro_zl1', name: 'CHEVROLET CAMARO ZL1', engine: '6.2L LT4 V8 Supercharged', drive: 'RWD', price: 65000, baseHp: 650, baseWeight: 1760, baseGrip: 86, redline: 6600, maxBoost: 1.35, defaultColor: '#111827', sound: { baseFreq: 30, type: 'square', subType: 'sawtooth', cylinders: 8, turboFlutter: false, whine: 0.38, rasp: 1.3 } },
+      { id: 'viper_srt', name: 'DODGE VIPER SRT10', engine: '8.4L V10 Viper Power', drive: 'RWD', price: 78000, baseHp: 600, baseWeight: 1550, baseGrip: 87, redline: 6400, maxBoost: 0.0, defaultColor: '#047857', sound: { baseFreq: 36, type: 'sawtooth', subType: 'sine', cylinders: 10, turboFlutter: false, whine: 0.02, rasp: 2.0 } },
+      { id: 'demon', name: 'DODGE SRT DEMON', engine: '6.2L HEMI V8 Supercharged', drive: 'RWD', price: 92000, baseHp: 740, baseWeight: 1840, baseGrip: 82, redline: 7200, maxBoost: 1.45, defaultColor: '#581c87', sound: { baseFreq: 31, type: 'square', subType: 'sawtooth', cylinders: 8, turboFlutter: false, whine: 0.45, rasp: 1.1 } },
+
+      // European & Supercars
+      { id: 'bmw_m3_e30', name: 'BMW M3 E30 SPORT EVOLUTION', engine: '2.5L S14 Inline-4', drive: 'RWD', price: 26000, baseHp: 238, baseWeight: 1200, baseGrip: 84, redline: 7200, maxBoost: 0.0, defaultColor: '#ef4444', sound: { baseFreq: 58, type: 'sawtooth', subType: 'triangle', cylinders: 4, turboFlutter: false, whine: 0.03, rasp: 1.9 } },
+      { id: 'bmw_m3_e46', name: 'BMW M3 E46 CSL', engine: '3.2L S54 Inline-6', drive: 'RWD', price: 39000, baseHp: 360, baseWeight: 1385, baseGrip: 87, redline: 7900, maxBoost: 0.0, defaultColor: '#0284c7', sound: { baseFreq: 48, type: 'sawtooth', subType: 'square', cylinders: 6, turboFlutter: false, whine: 0.05, rasp: 2.1 } },
+      { id: 'audi_rs6', name: 'AUDI RS6 AVANT C8', engine: '4.0L V8 Biturbo Hybrid', drive: 'AWD', price: 72000, baseHp: 600, baseWeight: 2070, baseGrip: 92, redline: 6800, maxBoost: 1.4, defaultColor: '#64748b', sound: { baseFreq: 35, type: 'sawtooth', subType: 'square', cylinders: 8, turboFlutter: true, whine: 0.15, rasp: 1.4 } },
+      { id: 'gt3', name: 'PORSCHE 911 GT3 RS (992)', engine: '4.0L Flat-6 Aspirado 9K', drive: 'RWD', price: 89000, baseHp: 525, baseWeight: 1380, baseGrip: 93, redline: 9200, maxBoost: 0.0, defaultColor: '#e2e8f0', sound: { baseFreq: 56, type: 'sawtooth', subType: 'sine', cylinders: 6, turboFlutter: false, whine: 0.05, rasp: 2.1 } },
+      { id: 'amg_gtr', name: 'MERCEDES-AMG GT R PRO', engine: '4.0L M178 V8 BiTurbo', drive: 'RWD', price: 94000, baseHp: 585, baseWeight: 1575, baseGrip: 90, redline: 7000, maxBoost: 1.35, defaultColor: '#10b981', sound: { baseFreq: 33, type: 'sawtooth', subType: 'square', cylinders: 8, turboFlutter: true, whine: 0.2, rasp: 1.7 } },
+      { id: 'lambo_evo', name: 'LAMBORGHINI HURACÁN EVO', engine: '5.2L V10 Aspirado 8.5K', drive: 'AWD', price: 125000, baseHp: 640, baseWeight: 1422, baseGrip: 95, redline: 8700, maxBoost: 0.0, defaultColor: '#f97316', sound: { baseFreq: 60, type: 'sawtooth', subType: 'sine', cylinders: 10, turboFlutter: false, whine: 0.08, rasp: 2.6 } },
+      { id: 'gtr35', name: 'NISSAN GT-R R35 NISMO', engine: '3.8L VR38DETT Twin-Turbo', drive: 'AWD', price: 135000, baseHp: 610, baseWeight: 1640, baseGrip: 96, redline: 7800, maxBoost: 1.55, defaultColor: '#334155', sound: { baseFreq: 42, type: 'sawtooth', subType: 'square', cylinders: 6, turboFlutter: true, whine: 0.18, rasp: 1.5 } },
+      { id: 'f40', name: 'FERRARI F40 LM', engine: '2.9L Tipo F120A V8 Twin-Turbo', drive: 'RWD', price: 175000, baseHp: 720, baseWeight: 1210, baseGrip: 94, redline: 8900, maxBoost: 1.65, defaultColor: '#dc2626', sound: { baseFreq: 62, type: 'sawtooth', subType: 'square', cylinders: 8, turboFlutter: true, whine: 0.22, rasp: 2.4 } },
+      { id: 'bugatti_ss', name: 'BUGATTI CHIRON SUPER SPORT', engine: '8.0L W16 Quad-Turbo', drive: 'AWD', price: 250000, baseHp: 1200, baseWeight: 1975, baseGrip: 98, redline: 7100, maxBoost: 2.1, defaultColor: '#1e3a8a', sound: { baseFreq: 39, type: 'sawtooth', subType: 'triangle', cylinders: 16, turboFlutter: true, whine: 0.35, rasp: 1.6 } }
+    ];
+
+    const MAPS = {
+      tokyo_night: { name: 'Tokyo Wangan (Noite Neon)', sky1: '#04060b', sky2: '#0f1626', weather: 'clear', gripMult: 1.0, rewardMult: 1.0 },
+      shuto_dusk: { name: 'Shuto Expressway (Pôr do Sol)', sky1: '#7c2d12', sky2: '#3b0764', weather: 'clear', gripMult: 1.0, rewardMult: 1.1 },
+      mount_dawn: { name: 'Monte Akina (Amanhecer)', sky1: '#1e3a8a', sky2: '#fde047', weather: 'clear', gripMult: 1.02, rewardMult: 1.2 },
+      tokyo_rain: { name: 'Tokyo Wangan (Chuvoso)', sky1: '#020617', sky2: '#0f172a', weather: 'rain', gripMult: 0.82, rewardMult: 1.35 },
+      winter_snow: { name: 'Hokkaido (Inverno Neve)', sky1: '#334155', sky2: '#94a3b8', weather: 'snow', gripMult: 0.74, rewardMult: 1.5 },
+      spring_day: { name: 'Primavera Sakura (Dia)', sky1: '#38bdf8', sky2: '#fbcfe8', weather: 'sakura', gripMult: 1.05, rewardMult: 1.1 }
+    };
+
+    const DIFFICULTIES = {
+      easy:   { id: 'easy',   name: 'FÁCIL',    mult: 1.0, baseReward: 2500, aiReaction: 0.45, aiShiftAcc: 0.78, aiPowerScale: 0.82, aiUsesNos: false },
+      medium: { id: 'medium', name: 'AMADOR',   mult: 1.5, baseReward: 4000, aiReaction: 0.25, aiShiftAcc: 0.88, aiPowerScale: 0.95, aiUsesNos: false },
+      hard:   { id: 'hard',   name: 'PROF',     mult: 2.2, baseReward: 6500, aiReaction: 0.12, aiShiftAcc: 0.95, aiPowerScale: 1.05, aiUsesNos: true },
+      legend: { id: 'legend', name: 'LENDA',    mult: 3.5, baseReward: 10000, aiReaction: 0.04, aiShiftAcc: 0.99, aiPowerScale: 1.15, aiUsesNos: true }
+    };
+
+    const BODY_KITS = [
+      { id: 'stock', name: 'Original OEM', price: 0, aeroBonus: 0, gripBonus: 0 },
+      { id: 'street', name: 'Street Lip & Saias', price: 3000, aeroBonus: 12, gripBonus: 2 },
+      { id: 'rocketbunny', name: 'Rocket Bunny Wide', price: 7500, aeroBonus: 25, gripBonus: 5 },
+      { id: 'libertywalk', name: 'Liberty Walk GT', price: 11000, aeroBonus: 35, gripBonus: 7 },
+      { id: 'timeattack', name: 'Time Attack Carbon', price: 16000, aeroBonus: 50, gripBonus: 10 }
+    ];
+
+    const SPOILERS = [{ id: 'none', name: 'Sem Asa' }, { id: 'ducktail', name: 'Ducktail' }, { id: 'gtwing', name: 'GT Carbono' }];
+    const STANCES = [{ id: 'stock', name: 'Original', drop: 0 }, { id: 'lower', name: 'Rebaixado', drop: 4 }, { id: 'slammed', name: 'Socado', drop: 7 }];
+    const INTERCOOLERS = [{ id: 'silver', name: 'Alumínio', color: '#cbd5e1' }, { id: 'black', name: 'Stealth Black', color: '#1e293b' }, { id: 'gold', name: 'HKS Gold', color: '#f59e0b' }];
+    const PAINT_SWATCHES = ['#dc2626', '#991b1b', '#f97316', '#eab308', '#16a34a', '#059669', '#0284c7', '#1d4ed8', '#0055d4', '#4f46e5', '#7e22ce', '#db2777', '#f8fafc', '#94a3b8', '#475569', '#1e293b'];
+    const UPGRADE_DEFS = [
+      { key: 'engine', name: 'Bloco & Forjados', desc: 'Pistões forjados e ECU', baseCost: 2000, max: 5 },
+      { key: 'turbo', name: 'Kit Turbo / Blower', desc: 'Aumenta pressão e torque', baseCost: 2500, max: 5 },
+      { key: 'nos', name: 'Sistema Nitro (NOS)', desc: 'Injeção direta de óxido', baseCost: 1800, max: 5 },
+      { key: 'tires', name: 'Pneus Drag Slick', desc: 'Aderência máxima na pista', baseCost: 1700, max: 5 },
+      { key: 'gearbox', name: 'Câmbio Dogbox 6M', desc: 'Engates ultrarrápidos', baseCost: 1900, max: 5 }
+    ];
+
+    // =========================================================
+    // GAME STATE
+    // =========================================================
+    const state = {
+      money: 50000,
+      selectedCarIdx: 0,
+      difficulty: 'medium',
+      currentMap: 'tokyo_night',
+      muted: false,
+      revvingGarage: false,
+      garageRpm: 1000,
+      garageWheelAngle: 0,
+      garageFlames: 0,
+      ownedCars: { gtr32: createDefaultCarConfig('gtr32') }
+    };
+
+    function createDefaultCarConfig(carId) {
+      const car = CARS.find(c => c.id === carId) || CARS[0];
+      return {
+        upgrades: { engine: 0, turbo: 0, nos: 0, tires: 0, gearbox: 0 },
+        bodyKit: 'stock',
+        unlockedKits: ['stock'],
+        spoiler: 'ducktail',
+        stance: 'lower',
+        intercooler: 'silver',
+        color: car.defaultColor,
+        finish: 'gloss',
+        livery: 'none',
+        wheel: 'te37',
+        caliper: '#ef4444'
+      };
+    }
+
+    function getCurrentCar() { return CARS[state.selectedCarIdx]; }
+    function getCarConfig(carId) { return state.ownedCars[carId] || createDefaultCarConfig(carId); }
+
+    function getCarStats(carId) {
+      const car = CARS.find(c => c.id === carId);
+      const cfg = getCarConfig(carId);
+      const u = cfg.upgrades;
+      const kit = BODY_KITS.find(k => k.id === cfg.bodyKit) || BODY_KITS[0];
+      const mapObj = MAPS[state.currentMap];
+
+      const hpMult = 1 + u.engine * 0.22 + u.turbo * 0.26;
+      const hp = Math.round(car.baseHp * hpMult + kit.aeroBonus * 0.4);
+      const weight = Math.max(900, car.baseWeight - u.engine * 18 - u.gearbox * 12);
+      const boost = +(car.maxBoost + u.turbo * 0.32).toFixed(2);
+      const grip = Math.min(100, Math.round((car.baseGrip + u.tires * 3 + kit.gripBonus) * mapObj.gripMult));
+      const nosPower = 110 + u.nos * 55;
+      const shiftSpeed = Math.max(0.06, 0.22 - u.gearbox * 0.03);
+
+      return { hp, weight, boost, grip, nosPower, shiftSpeed, redline: car.redline, drive: car.drive };
+    }
+
+    // =========================================================
+    // AUDIO ENGINE
+    // =========================================================
+    class EngineAudio {
+      constructor() { this.ctx = null; this.started = false; }
+      init() {
+        if (this.started) return;
+        try {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return;
+          this.ctx = new AudioCtx();
+          this.masterGain = this.ctx.createGain();
+          this.masterGain.gain.value = 0.0001;
+          this.filter = this.ctx.createBiquadFilter();
+          this.filter.type = 'lowpass';
+          this.filter.frequency.value = 320;
+          this.filter.Q.value = 3.5;
+          this.osc1 = this.ctx.createOscillator();
+          this.osc2 = this.ctx.createOscillator();
+          this.whineOsc = this.ctx.createOscillator();
+          const osc2Gain = this.ctx.createGain();
+          osc2Gain.gain.value = 0.45;
+          this.whineGain = this.ctx.createGain();
+          this.whineGain.gain.value = 0.0001;
+          this.osc1.connect(this.filter);
+          this.osc2.connect(osc2Gain);
+          osc2Gain.connect(this.filter);
+          this.whineOsc.type = 'sine';
+          this.whineOsc.connect(this.whineGain);
+          this.whineGain.connect(this.masterGain);
+          this.filter.connect(this.masterGain);
+          this.masterGain.connect(this.ctx.destination);
+          this.osc1.start(); this.osc2.start(); this.whineOsc.start();
+          this.started = true;
+        } catch (e) {}
+      }
+      update(rpm, throttle, boostRatio, carSound, active) {
+        if (!this.started || !this.ctx) return;
+        if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
+        const now = this.ctx.currentTime;
+        if (state.muted || !active) {
+          this.masterGain.gain.setTargetAtTime(0.0001, now, 0.06);
+          this.whineGain.gain.setTargetAtTime(0.0001, now, 0.06);
+          return;
+        }
+        const rpmNorm = Math.max(0.1, rpm / 1000);
+        const freq = carSound.baseFreq * rpmNorm;
+        this.osc1.type = carSound.type;
+        this.osc2.type = carSound.subType;
+        this.osc1.frequency.setTargetAtTime(freq, now, 0.025);
+        this.osc2.frequency.setTargetAtTime(freq * (carSound.cylinders >= 8 ? 0.5 : 1.5), now, 0.025);
+        const cutoff = 180 + rpm * 0.16 * carSound.rasp + (throttle ? 420 : 0);
+        this.filter.frequency.setTargetAtTime(Math.min(4500, cutoff), now, 0.03);
+        this.masterGain.gain.setTargetAtTime(throttle ? 0.14 : 0.065, now, 0.03);
+        const whineFreq = 900 + rpm * 0.42 + boostRatio * 1400;
+        this.whineOsc.frequency.setTargetAtTime(whineFreq, now, 0.03);
+        this.whineGain.gain.setTargetAtTime((throttle ? 0.045 : 0.01) * carSound.whine * (0.4 + boostRatio), now, 0.04);
+      }
+      playBlowOff(carSound) {
+        if (!this.started || !this.ctx || state.muted) return;
+        try {
+          const now = this.ctx.currentTime;
+          const bufSize = this.ctx.sampleRate * 0.22;
+          const buf = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
+          const data = buf.getChannelData(0);
+          for (let i = 0; i < bufSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufSize * 0.35)) * (carSound.turboFlutter ? (0.5 + 0.5 * Math.sin(i * 0.01)) : 1);
+          }
+          const src = this.ctx.createBufferSource();
+          src.buffer = buf;
+          const bp = this.ctx.createBiquadFilter();
+          bp.type = 'bandpass';
+          bp.frequency.setValueAtTime(2400, now);
+          const gain = this.ctx.createGain();
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+          src.connect(bp); bp.connect(gain); gain.connect(this.ctx.destination);
+          src.start(now);
+        } catch (e) {}
+      }
+      playBeep(freq, dur = 0.1) {
+        if (!this.started || !this.ctx || state.muted) return;
+        try {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(now); osc.stop(now + dur);
+        } catch (e) {}
+      }
+    }
+    const audio = new EngineAudio();
+
+    // =========================================================
+    // PIXEL RENDERER
+    // =========================================================
+    function shadeHex(hex, percent) {
+      const num = parseInt(hex.replace('#', ''), 16);
+      const amt = Math.round(2.55 * percent);
+      const R = Math.min(255, Math.max(0, (num >> 16) + amt));
+      const G = Math.min(255, Math.max(0, (num >> 8 & 0x00FF) + amt));
+      const B = Math.min(255, Math.max(0, (num & 0x0000FF) + amt));
+      return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+    }
+
+    function drawPixelCar(ctx, carId, cfg, x, y, scale, wheelAngle, flameLevel, pitchAngle = 0) {
+      const stanceObj = STANCES.find(s => s.id === cfg.stance) || STANCES[1];
+      const drop = stanceObj.drop;
+      const icObj = INTERCOOLERS.find(i => i.id === cfg.intercooler) || INTERCOOLERS[0];
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(scale, scale);
+
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+      ctx.fillRect(-64, -3, 128, 5);
+
+      ctx.save();
+      ctx.translate(0, drop);
+      ctx.rotate(pitchAngle);
+
+      const baseCol = cfg.color;
+      const darkCol = shadeHex(baseCol, -28);
+      const lightCol = cfg.finish === 'matte' ? shadeHex(baseCol, 8) : shadeHex(baseCol, 28);
+      const specCol = cfg.finish === 'metallic' ? '#ffffff' : shadeHex(baseCol, 45);
+
+      // Exhaust & Flames
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillRect(-66, -11, 6, 4);
+      if (flameLevel > 0) {
+        const fLen = 10 + Math.random() * 12 * flameLevel;
+        ctx.fillStyle = '#ff2a6d';
+        ctx.fillRect(-66 - fLen, -12, fLen, 6);
+        ctx.fillStyle = '#ffaa00';
+        ctx.fillRect(-66 - fLen * 0.7, -11, fLen * 0.7, 4);
+      }
+
+      // Spoilers
+      if (cfg.spoiler === 'ducktail') {
+        ctx.fillStyle = darkCol;
+        ctx.fillRect(-62, -26, 8, 4);
+      } else if (cfg.spoiler === 'gtwing') {
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(-56, -33, 3, 10);
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(-64, -35, 15, 3);
+      }
+
+      // Chassis body
+      ctx.fillStyle = baseCol;
+      ctx.fillRect(-60, -21, 120, 13);
+      ctx.fillStyle = lightCol;
+      ctx.fillRect(-59, -21, 118, 2);
+      ctx.fillStyle = darkCol;
+      ctx.fillRect(-60, -10, 120, 2);
+
+      // Cabin
+      ctx.fillStyle = baseCol;
+      ctx.beginPath();
+      ctx.moveTo(-44, -21);
+      ctx.lineTo(-26, -33);
+      ctx.lineTo(8, -33);
+      ctx.lineTo(26, -21);
+      ctx.closePath();
+      ctx.fill();
+
+      // Windows
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.moveTo(-36, -22);
+      ctx.lineTo(-24, -31);
+      ctx.lineTo(6, -31);
+      ctx.lineTo(22, -22);
+      ctx.closePath();
+      ctx.fill();
+
+      // Intercooler
+      ctx.fillStyle = icObj.color;
+      ctx.fillRect(55, -12, 6, 5);
+
+      // Headlights / Taillights
+      ctx.fillStyle = '#fef08a';
+      ctx.fillRect(57, -18, 4, 3);
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(-60, -18, 4, 3);
+
+      // Bodykit arches
+      if (cfg.bodyKit !== 'stock') {
+        ctx.fillStyle = darkCol;
+        ctx.fillRect(-48, -20, 22, 12);
+        ctx.fillRect(26, -20, 22, 12);
+      }
+
+      ctx.restore();
+      drawPixelWheel(ctx, -38, -10, 10, wheelAngle, cfg.wheel, cfg.caliper);
+      drawPixelWheel(ctx, 38, -10, 10, wheelAngle, cfg.wheel, cfg.caliper);
+      ctx.restore();
+    }
+
+    function drawPixelWheel(ctx, cx, cy, r, angle, style, caliperCol) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.fillStyle = '#111318';
+      ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#64748b';
+      ctx.beginPath(); ctx.arc(0, 0, r - 4, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = caliperCol;
+      ctx.fillRect(-4, -4, 3, 4);
+
+      ctx.save();
+      ctx.rotate(angle);
+      ctx.strokeStyle = style === 'bbs' ? '#fbbf24' : '#94a3b8';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.arc(0, 0, r - 3, 0, Math.PI * 2); ctx.stroke();
+      for (let i = 0; i < 5; i++) {
+        const a = (i * Math.PI * 2) / 5;
+        ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * (r - 3), Math.sin(a) * (r - 3)); ctx.stroke();
+      }
+      ctx.restore();
+      ctx.restore();
+    }
+
+    // =========================================================
+    // GARAGE UI & LOOP
+    // =========================================================
+    const garageCanvas = document.getElementById('garage-canvas');
+    const gCtx = garageCanvas.getContext('2d');
+
+    function renderGarageLoop() {
+      const car = getCurrentCar();
+      const cfg = getCarConfig(car.id);
+
+      if (state.revvingGarage) {
+        state.garageRpm += (car.redline - state.garageRpm) * 0.16;
+        if (state.garageRpm > car.redline - 200) {
+          state.garageRpm = car.redline - 350 + Math.random() * 300;
+          state.garageFlames = 1;
+        }
+        state.garageWheelAngle += 0.35;
+      } else {
+        if (state.garageRpm > 3000) audio.playBlowOff(car.sound);
+        state.garageRpm += (950 - state.garageRpm) * 0.12;
+        state.garageFlames = Math.max(0, state.garageFlames - 0.1);
+      }
+
+      if (!document.getElementById('race-view').classList.contains('active')) {
+        audio.update(state.garageRpm, state.revvingGarage, state.revvingGarage ? 0.8 : 0, car.sound, state.revvingGarage);
+      }
+
+      const w = garageCanvas.width;
+      const h = garageCanvas.height;
+      gCtx.clearRect(0, 0, w, h);
+
+      gCtx.fillStyle = '#0b0e16';
+      gCtx.fillRect(0, 0, w, h);
+      gCtx.fillStyle = '#131824';
+      gCtx.fillRect(0, 145, w, 45);
+
+      drawPixelCar(gCtx, car.id, cfg, w / 2, 145, 1.8, state.garageWheelAngle, state.garageFlames, state.revvingGarage ? -0.01 : 0);
+      requestAnimationFrame(renderGarageLoop);
+    }
+
+    function updateGarageUI() {
+      const car = getCurrentCar();
+      const isOwned = !!state.ownedCars[car.id];
+      const cfg = getCarConfig(car.id);
+      const stats = getCarStats(car.id);
+      const kitObj = BODY_KITS.find(k => k.id === cfg.bodyKit) || BODY_KITS[0];
+      const diffObj = DIFFICULTIES[state.difficulty];
+
+      document.getElementById('hud-money').textContent = `$ ${state.money.toLocaleString()}`;
+      document.getElementById('hud-diff-pill').textContent = `DIFICULDADE: ${diffObj.name}`;
+
+      document.getElementById('car-name').textContent = car.name;
+      document.getElementById('car-engine-desc').textContent = car.engine;
+      document.getElementById('car-drive-tag').textContent = car.drive;
+      document.getElementById('car-kit-tag').textContent = `KIT: ${kitObj.name.toUpperCase()}`;
+
+      const badge = document.getElementById('car-owned-badge');
+      const mainBtn = document.getElementById('btn-main-action');
+
+      if (isOwned) {
+        badge.textContent = 'NA GARAGEM';
+        badge.classList.remove('locked');
+        mainBtn.textContent = 'CORRER NA RUA';
+        mainBtn.classList.remove('buy-mode');
+      } else {
+        badge.textContent = `BLOQUEADO • $${car.price.toLocaleString()}`;
+        badge.classList.add('locked');
+        mainBtn.textContent = `COMPRAR ($${car.price.toLocaleString()})`;
+        mainBtn.classList.add('buy-mode');
+      }
+
+      document.getElementById('spec-hp').innerHTML = `${stats.hp} <span>HP</span>`;
+      document.getElementById('spec-weight').innerHTML = `${stats.weight} <span>KG</span>`;
+      document.getElementById('spec-boost').innerHTML = `${stats.boost} <span>BAR</span>`;
+      document.getElementById('spec-grip').innerHTML = `${stats.grip} <span>%</span>`;
+
+      renderMechanicsTab(car, cfg, isOwned);
+      renderBodyKitsTab(car, cfg, isOwned);
+      renderPaintTab(car, cfg, isOwned);
+    }
+
+    function renderMechanicsTab(car, cfg, isOwned) {
+      const container = document.getElementById('tab-mech');
+      container.innerHTML = '';
+      UPGRADE_DEFS.forEach(upg => {
+        const lvl = cfg.upgrades[upg.key] || 0;
+        const isMax = lvl >= upg.max;
+        const cost = Math.round(upg.baseCost * Math.pow(1.5, lvl));
+        const card = document.createElement('div');
+        card.className = 'upgrade-card';
+
+        let pips = '';
+        for (let i = 0; i < upg.max; i++) pips += `<div class="pip ${i < lvl ? 'filled' : ''}"></div>`;
+
+        card.innerHTML = `
+          <div class="upg-info">
+            <h4>${upg.name} <span style="color:var(--neon-cyan);font-size:11px;">STG ${lvl}/${upg.max}</span></h4>
+            <p>${upg.desc}</p>
+            <div class="stage-pips">${pips}</div>
+          </div>
+          <button class="btn-upgrade" ${(!isOwned || isMax || state.money < cost) ? 'disabled' : ''}>
+            ${!isOwned ? 'BLOQ' : (isMax ? 'MÁX' : `$ ${cost.toLocaleString()}`)}
+          </button>
+        `;
+        card.querySelector('button').onclick = () => {
+          if (!isOwned || isMax || state.money < cost) return;
+          state.money -= cost;
+          cfg.upgrades[upg.key] = lvl + 1;
+          audio.playBeep(740, 0.08);
+          updateGarageUI();
+        };
+        container.appendChild(card);
+      });
+    }
+
+    function renderBodyKitsTab(car, cfg, isOwned) {
+      const kitList = document.getElementById('bodykit-list');
+      kitList.innerHTML = '';
+      BODY_KITS.forEach(kit => {
+        const unlocked = cfg.unlockedKits.includes(kit.id);
+        const equipped = cfg.bodyKit === kit.id;
+        const card = document.createElement('div');
+        card.className = `kit-card ${unlocked ? 'owned' : ''} ${equipped ? 'equipped' : ''}`;
+        card.innerHTML = `
+          <div class="kit-card-top"><span>${kit.name}</span></div>
+          <div class="kit-card-sub">+${kit.gripBonus}% Grip</div>
+          <div class="kit-price">${equipped ? 'EQUIPADO' : (unlocked ? 'INSTALAR' : `$ ${kit.price}`)}</div>
+        `;
+        card.onclick = () => {
+          if (!isOwned) return;
+          if (unlocked) { cfg.bodyKit = kit.id; updateGarageUI(); }
+          else if (state.money >= kit.price) { state.money -= kit.price; cfg.unlockedKits.push(kit.id); cfg.bodyKit = kit.id; updateGarageUI(); }
+        };
+        kitList.appendChild(card);
+      });
+
+      // Spoilers
+      const spList = document.getElementById('spoiler-list');
+      spList.innerHTML = '';
+      SPOILERS.forEach(sp => {
+        const btn = document.createElement('button');
+        btn.className = `pill-opt ${cfg.spoiler === sp.id ? 'active' : ''}`;
+        btn.textContent = sp.name;
+        btn.onclick = () => { if (!isOwned) return; cfg.spoiler = sp.id; updateGarageUI(); };
+        spList.appendChild(btn);
+      });
+
+      // Stance
+      const stList = document.getElementById('stance-list');
+      stList.innerHTML = '';
+      STANCES.forEach(st => {
+        const btn = document.createElement('button');
+        btn.className = `pill-opt ${cfg.stance === st.id ? 'active' : ''}`;
+        btn.textContent = st.name;
+        btn.onclick = () => { if (!isOwned) return; cfg.stance = st.id; updateGarageUI(); };
+        stList.appendChild(btn);
+      });
+
+      // Intercoolers
+      const icList = document.getElementById('intercooler-list');
+      icList.innerHTML = '';
+      INTERCOOLERS.forEach(ic => {
+        const btn = document.createElement('button');
+        btn.className = `pill-opt ${cfg.intercooler === ic.id ? 'active' : ''}`;
+        btn.textContent = ic.name;
+        btn.onclick = () => { if (!isOwned) return; cfg.intercooler = ic.id; updateGarageUI(); };
+        icList.appendChild(btn);
+      });
+    }
+
+    function renderPaintTab(car, cfg, isOwned) {
+      const swGrid = document.getElementById('paint-swatches');
+      swGrid.innerHTML = '';
+      PAINT_SWATCHES.forEach(hex => {
+        const sw = document.createElement('div');
+        sw.className = `swatch ${cfg.color.toLowerCase() === hex.toLowerCase() ? 'active' : ''}`;
+        sw.style.backgroundColor = hex;
+        sw.onclick = () => { if (!isOwned) return; cfg.color = hex; updateGarageUI(); };
+        swGrid.appendChild(sw);
+      });
+
+      const finishes = [{ id: 'gloss', name: 'Brilho' }, { id: 'metallic', name: 'Metálico' }, { id: 'matte', name: 'Fosco' }];
+      const finList = document.getElementById('finish-list');
+      finList.innerHTML = '';
+      finishes.forEach(f => {
+        const btn = document.createElement('button');
+        btn.className = `pill-opt ${cfg.finish === f.id ? 'active' : ''}`;
+        btn.textContent = f.name;
+        btn.onclick = () => { if (!isOwned) return; cfg.finish = f.id; updateGarageUI(); };
+        finList.appendChild(btn);
+      });
+
+      const wheels = [{ id: 'te37', name: 'TE37' }, { id: 'bbs', name: 'BBS' }, { id: 'drag', name: 'Drag' }];
+      const wList = document.getElementById('wheel-list');
+      wList.innerHTML = '';
+      wheels.forEach(w => {
+        const btn = document.createElement('button');
+        btn.className = `pill-opt ${cfg.wheel === w.id ? 'active' : ''}`;
+        btn.textContent = w.name;
+        btn.onclick = () => { if (!isOwned) return; cfg.wheel = w.id; updateGarageUI(); };
+        wList.appendChild(btn);
+      });
+
+      const calipers = [{ id: '#ef4444', name: 'Vermelho' }, { id: '#eab308', name: 'Dourado' }, { id: '#00f0ff', name: 'Azul' }];
+      const cList = document.getElementById('caliper-list');
+      cList.innerHTML = '';
+      calipers.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = `pill-opt ${cfg.caliper === c.id ? 'active' : ''}`;
+        btn.textContent = c.name;
+        btn.onclick = () => { if (!isOwned) return; cfg.caliper = c.id; updateGarageUI(); };
+        cList.appendChild(btn);
+      });
+    }
+
+    // =========================================================
+    // RACE ENGINE & WEATHER/MAPS RENDERING
+    // =========================================================
+    const raceCanvas = document.getElementById('race-canvas');
+    const rCtx = raceCanvas.getContext('2d');
+    const GEAR_RATIOS = [0, 3.45, 2.32, 1.72, 1.34, 1.08, 0.88];
+    const FINAL_DRIVE = 3.65;
+    const TIRE_CIRC = 2.02;
+
+    let race = null;
+    let raceAnimId = null;
+    let lastFrameTime = 0;
+
+    function startRace() {
+      audio.init();
+      const car = getCurrentCar();
+      const cfg = getCarConfig(car.id);
+      const stats = getCarStats(car.id);
+      const diff = DIFFICULTIES[state.difficulty];
+      const dist = parseInt(document.getElementById('race-distance').value, 10);
+
+      const rivalCar = CARS[(state.selectedCarIdx + 1 + Math.floor(Math.random() * 4)) % CARS.length];
+      const rivalCfg = createDefaultCarConfig(rivalCar.id);
+      rivalCfg.color = ['#ff2a6d', '#f59e0b', '#8b5cf6', '#10b981'][Math.floor(Math.random() * 4)];
+
+      race = {
+        active: true, finished: false, distance: dist, phase: 'countdown',
+        countdownTimer: 0, treeStage: 0, raceTime: 0,
+        gasPressed: false, nosPressed: false, particles: [], snowflakes: [], raindrops: [],
+        player: { car, cfg, stats, pos: 0, vel: 0, rpm: 1000, gear: 0, boost: 0, nos: 100, wheelAngle: 0, flame: 0, pitch: 0, falseStart: false, reactionTime: null, finishTime: null, trapSpeed: 0 },
+        rival: { car: rivalCar, cfg: rivalCfg, hp: Math.round(stats.hp * diff.aiPowerScale), weight: Math.round(stats.weight * 0.98), redline: rivalCar.redline, pos: 0, vel: 0, rpm: 1200, gear: 1, wheelAngle: 0, flame: 0, nos: 100, aiReactDelay: diff.aiReaction, aiShiftAcc: diff.aiShiftAcc, aiUsesNos: diff.aiUsesNos, launched: false, finishTime: null, trapSpeed: 0 }
+      };
+
+      document.getElementById('race-view').classList.add('active');
+      document.getElementById('result-modal').classList.remove('show');
+      document.getElementById('race-dist-label').textContent = dist === 402 ? '1/4 MILHA (402m)' : '1/2 MILHA (804m)';
+
+      resizeRaceCanvas();
+      lastFrameTime = performance.now();
+      if (raceAnimId) cancelAnimationFrame(raceAnimId);
+      raceLoop(lastFrameTime);
+    }
+
+    function resizeRaceCanvas() {
+      const rect = raceCanvas.getBoundingClientRect();
+      raceCanvas.width = Math.max(320, Math.floor(rect.width));
+      raceCanvas.height = Math.max(200, Math.floor(rect.height));
+    }
+
+    function showShiftBanner(text, isWarn = false) {
+      const el = document.getElementById('shift-banner');
+      el.textContent = text;
+      el.className = 'shift-banner show' + (isWarn ? ' warn' : '');
+      clearTimeout(el._timer);
+      el._timer = setTimeout(() => el.classList.remove('show'), 900);
+    }
+
+    function shiftUp() {
+      if (!race || !race.active || race.finished) return;
+      const p = race.player;
+      if (p.gear >= 6) return;
+      if (p.gear === 0) {
+        if (race.treeStage < 4) {
+          p.falseStart = true;
+          p.reactionTime = -0.25;
+          showShiftBanner('QUEIMOU A LARGADA! (+1.5s)', true);
+        } else {
+          p.reactionTime = +(race.raceTime).toFixed(3);
+          showShiftBanner(`REAÇÃO: ${p.reactionTime.toFixed(3)}s`);
+        }
+        p.gear = 1;
+        if (p.rpm > p.stats.redline * 0.65) { p.vel += 4.2 * (p.stats.grip / 85); p.flame = 1; }
+        return;
+      }
+      const ratio = p.rpm / p.stats.redline;
+      if (ratio >= 0.84 && ratio <= 0.95) { p.vel += 3.0; p.flame = 1.0; showShiftBanner('PERFECT SHIFT!'); audio.playBlowOff(p.car.sound); }
+      else { showShiftBanner('TROCA OK'); }
+      p.gear += 1;
+      p.rpm = Math.max(2200, p.rpm * (GEAR_RATIOS[p.gear] / GEAR_RATIOS[p.gear - 1]));
+    }
+
+    function shiftDown() {
+      if (!race || !race.active || race.finished) return;
+      const p = race.player;
+      if (p.gear <= 1) return;
+      p.gear -= 1;
+      p.rpm = Math.min(p.stats.redline, p.rpm * (GEAR_RATIOS[p.gear] / GEAR_RATIOS[p.gear + 1]));
+    }
+
+    function updateRacePhysics(dt) {
+      if (!race || !race.active) return;
+      if (race.phase === 'countdown') {
+        race.countdownTimer += dt;
+        const prev = race.treeStage;
+        if (race.countdownTimer > 2.4) { race.treeStage = 4; race.phase = 'racing'; }
+        else if (race.countdownTimer > 1.8) race.treeStage = 3;
+        else if (race.countdownTimer > 1.2) race.treeStage = 2;
+        else if (race.countdownTimer > 0.6) race.treeStage = 1;
+        if (race.treeStage !== prev) audio.playBeep(race.treeStage === 4 ? 880 : 440, 0.1);
+      }
+
+      if (race.phase === 'racing' && !race.finished) race.raceTime += dt;
+
+      // Player Physics
+      const p = race.player;
+      const redline = p.stats.redline;
+      if (p.gear === 0) {
+        if (race.gasPressed) {
+          p.rpm += (redline * 0.85 - p.rpm) * 7 * dt;
+          p.boost = Math.min(1, p.boost + dt * 1.4);
+        } else {
+          p.rpm += (1000 - p.rpm) * 5 * dt;
+          p.boost = Math.max(0, p.boost - dt * 1.2);
+        }
+      } else {
+        const gearRatio = GEAR_RATIOS[p.gear] * FINAL_DRIVE;
+        const wheelRpm = (p.vel / TIRE_CIRC) * 60 * gearRatio;
+        p.boost = Math.min(1, p.boost + (race.gasPressed ? dt * 1.6 : -dt * 1.8));
+        const nosActive = race.nosPressed && p.nos > 0 && race.phase === 'racing';
+        if (nosActive) { p.nos = Math.max(0, p.nos - dt * 26); p.flame = 1.0; }
+
+        const hpEff = p.stats.hp * (0.75 + 0.25 * p.boost) + (nosActive ? p.stats.nosPower : 0);
+        let drive = race.gasPressed ? (hpEff * 745.7) / Math.max(12, p.vel + 8) * (gearRatio / 9.5) : 0;
+        const maxGrip = p.stats.weight * 9.81 * (p.stats.grip / 70);
+        if (drive > maxGrip) drive = maxGrip * 0.94;
+
+        const netForce = drive - 0.35 * p.vel * p.vel - 150;
+        p.vel = Math.max(0, p.vel + (netForce / p.stats.weight) * dt);
+        p.pos += p.vel * dt;
+        p.rpm += (Math.max(2000, wheelRpm) - p.rpm) * Math.min(1, dt * 16);
+        if (p.rpm >= redline) p.rpm = redline - 100;
+      }
+
+      p.wheelAngle += (p.vel / 0.32) * dt;
+      p.flame = Math.max(0, p.flame - dt * 3.5);
+      audio.update(p.rpm, race.gasPressed, p.boost, p.car.sound, !race.finished);
+
+      // Rival AI
+      const r = race.rival;
+      if (race.phase === 'racing') {
+        if (!r.launched && race.raceTime >= r.aiReactDelay) r.launched = true;
+        if (r.launched) {
+          const gRatio = GEAR_RATIOS[r.gear] * FINAL_DRIVE;
+          const aiHp = r.hp * r.aiShiftAcc;
+          const aiForce = (aiHp * 745.7) / Math.max(13, r.vel + 8) * (gRatio / 9.5) - 0.35 * r.vel * r.vel - 160;
+          r.vel = Math.max(0, r.vel + (aiForce / r.weight) * dt);
+          r.pos += r.vel * dt;
+          r.rpm = (r.vel / TIRE_CIRC) * 60 * gRatio;
+          if (r.rpm >= r.redline * 0.9 && r.gear < 6) r.gear++;
+          r.wheelAngle += (r.vel / 0.32) * dt;
+        }
+      }
+
+      // Finish Check
+      if (!race.finished) {
+        if (p.pos >= race.distance && p.finishTime === null) {
+          p.finishTime = race.raceTime + (p.falseStart ? 1.5 : 0);
+          p.trapSpeed = Math.round(p.vel * 3.6);
+        }
+        if (r.pos >= race.distance && r.finishTime === null) {
+          r.finishTime = race.raceTime;
+          r.trapSpeed = Math.round(r.vel * 3.6);
+        }
+        if (p.finishTime !== null && (r.finishTime !== null || race.raceTime - p.finishTime > 1.2)) {
+          if (r.finishTime === null) {
+            r.finishTime = race.raceTime + (race.distance - r.pos) / Math.max(15, r.vel);
+            r.trapSpeed = Math.round(r.vel * 3.6);
+          }
+          finishRace();
+        }
+      }
+    }
+
+    function finishRace() {
+      race.finished = true;
+      audio.update(1000, false, 0, race.player.car.sound, false);
+      const p = race.player;
+      const r = race.rival;
+      const won = p.finishTime <= r.finishTime;
+      const diff = DIFFICULTIES[state.difficulty];
+      const mapObj = MAPS[state.currentMap];
+      const prize = won ? Math.round(diff.baseReward * diff.mult * mapObj.rewardMult) : 400;
+
+      state.money += prize;
+      const titleEl = document.getElementById('res-title');
+      if (won) {
+        titleEl.textContent = 'VITÓRIA!'; titleEl.className = 'result-title win';
+        audio.playBeep(880, 0.2);
+      } else {
+        titleEl.textContent = 'DERROTA!'; titleEl.className = 'result-title lose';
+        audio.playBeep(220, 0.25);
+      }
+
+      document.getElementById('res-player-et').textContent = `${p.finishTime.toFixed(3)} s`;
+      document.getElementById('res-rival-et').textContent = `${r.finishTime.toFixed(3)} s`;
+      document.getElementById('res-player-rt').textContent = `${p.reactionTime || 0.15} s`;
+      document.getElementById('res-rival-rt').textContent = `${r.aiReactDelay} s`;
+      document.getElementById('res-player-trap').textContent = `${p.trapSpeed} km/h`;
+      document.getElementById('res-rival-trap').textContent = `${r.trapSpeed} km/h`;
+      document.getElementById('res-reward').textContent = `+ $ ${prize.toLocaleString()}`;
+      document.getElementById('result-modal').classList.add('show');
+      updateGarageUI();
+    }
+
+    function renderRaceScene() {
+      if (!race) return;
+      const w = raceCanvas.width;
+      const h = raceCanvas.height;
+      const p = race.player;
+      const r = race.rival;
+      const mapObj = MAPS[state.currentMap];
+
+      const pxPerMeter = 26;
+      const camX = p.pos * pxPerMeter - w * 0.26;
+
+      // Sky Gradient
+      const skyGrad = rCtx.createLinearGradient(0, 0, 0, h * 0.55);
+      skyGrad.addColorStop(0, mapObj.sky1);
+      skyGrad.addColorStop(1, mapObj.sky2);
+      rCtx.fillStyle = skyGrad;
+      rCtx.fillRect(0, 0, w, h);
+
+      // Weather (Rain or Snow)
+      if (mapObj.weather === 'rain') {
+        rCtx.strokeStyle = 'rgba(100, 200, 255, 0.4)';
+        rCtx.lineWidth = 1;
+        for (let i = 0; i < 40; i++) {
+          const rx = (i * 45 + race.raceTime * 800) % w;
+          const ry = (i * 30 + race.raceTime * 1200) % h;
+          rCtx.beginPath(); rCtx.moveTo(rx, ry); rCtx.lineTo(rx - 4, ry + 16); rCtx.stroke();
+        }
+      } else if (mapObj.weather === 'snow') {
+        rCtx.fillStyle = '#ffffff';
+        for (let i = 0; i < 50; i++) {
+          const sx = (i * 35 + race.raceTime * 150) % w;
+          const sy = (i * 25 + race.raceTime * 250) % h;
+          rCtx.fillRect(sx, sy, 3, 3);
+        }
+      }
+
+      // Asphalt
+      const horizonY = Math.floor(h * 0.55);
+      rCtx.fillStyle = mapObj.weather === 'snow' ? '#cbd5e1' : '#11141c';
+      rCtx.fillRect(0, horizonY, w, h - horizonY);
+
+      const farLaneY = horizonY + Math.floor((h - horizonY) * 0.35);
+      const nearLaneY = horizonY + Math.floor((h - horizonY) * 0.75);
+
+      // Rival & Player
+      drawPixelCar(rCtx, r.car.id, r.cfg, r.pos * pxPerMeter - camX, farLaneY, 1.3, r.wheelAngle, r.flame, 0);
+      drawPixelCar(rCtx, p.car.id, p.cfg, p.pos * pxPerMeter - camX, nearLaneY, 1.45, p.wheelAngle, p.flame, p.pitch);
+
+      updateRaceHUD();
+    }
+
+    function updateRaceHUD() {
+      const p = race.player;
+      const r = race.rival;
+      document.getElementById('race-timer').textContent = `${race.raceTime.toFixed(3)} s`;
+      document.getElementById('hud-speed').textContent = Math.round(p.vel * 3.6);
+      document.getElementById('hud-rpm').textContent = Math.round(p.rpm);
+      document.getElementById('hud-gear').textContent = p.gear === 0 ? 'N' : p.gear;
+
+      document.getElementById('rpm-fill').style.width = `${Math.min(100, (p.rpm / p.stats.redline) * 100)}%`;
+      document.getElementById('boost-fill').style.width = `${Math.round(p.boost * 100)}%`;
+      document.getElementById('nos-fill').style.width = `${Math.round(p.nos)}%`;
+
+      document.getElementById('prog-player').style.left = `${Math.min(98, Math.max(2, (p.pos / race.distance) * 96 + 2))}%`;
+      document.getElementById('prog-rival').style.left = `${Math.min(98, Math.max(2, (r.pos / race.distance) * 96 + 2))}%`;
+    }
+
+    function raceLoop(now) {
+      const dt = Math.min(0.05, (now - lastFrameTime) / 1000);
+      lastFrameTime = now;
+      if (race && race.active) {
+        updateRacePhysics(dt);
+        renderRaceScene();
+        raceAnimId = requestAnimationFrame(raceLoop);
+      }
+    }
+
+    function exitToGarage() {
+      if (race) race.active = false;
+      if (raceAnimId) cancelAnimationFrame(raceAnimId);
+      audio.update(1000, false, 0, getCurrentCar().sound, false);
+      document.getElementById('race-view').classList.remove('active');
+      document.getElementById('result-modal').classList.remove('show');
+      updateGarageUI();
+    }
+
+    // =========================================================
+    // EVENT LISTENERS
+    // =========================================================
+    document.getElementById('btn-prev-car').onclick = () => { state.selectedCarIdx = (state.selectedCarIdx - 1 + CARS.length) % CARS.length; updateGarageUI(); };
+    document.getElementById('btn-next-car').onclick = () => { state.selectedCarIdx = (state.selectedCarIdx + 1) % CARS.length; updateGarageUI(); };
+
+    const revBtn = document.getElementById('btn-rev-test');
+    const setRev = (v) => { audio.init(); state.revvingGarage = v; revBtn.classList.toggle('active', v); };
+    revBtn.onmousedown = () => setRev(true); window.onmouseup = () => setRev(false);
+    revBtn.ontouchstart = (e) => { e.preventDefault(); setRev(true); }; revBtn.ontouchend = () => setRev(false);
+
+    document.getElementById('map-select').onchange = (e) => { state.currentMap = e.target.value; updateGarageUI(); };
+
+    document.querySelectorAll('.diff-btn').forEach(btn => {
+      btn.onclick = () => {
+        state.difficulty = btn.dataset.diff;
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        updateGarageUI();
+      };
+    });
+
+    document.getElementById('btn-main-action').onclick = () => {
+      audio.init();
+      const car = getCurrentCar();
+      if (!state.ownedCars[car.id]) {
+        if (state.money >= car.price) { state.money -= car.price; state.ownedCars[car.id] = createDefaultCarConfig(car.id); updateGarageUI(); }
+      } else { startRace(); }
+    };
+
+    document.querySelectorAll('.tab-btn').forEach(tab => {
+      tab.onclick = () => {
+        document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      };
+    });
+
+    document.getElementById('custom-color-picker').oninput = (e) => {
+      const car = getCurrentCar();
+      if (state.ownedCars[car.id]) { state.ownedCars[car.id].color = e.target.value; updateGarageUI(); }
+    };
+
+    document.getElementById('btn-mute').onclick = () => {
+      audio.init(); state.muted = !state.muted;
+      document.getElementById('btn-mute').textContent = state.muted ? 'SOM: OFF' : 'SOM: ON';
+    };
+
+    const btnGas = document.getElementById('btn-gas');
+    const setGas = (v) => { if (race) race.gasPressed = v; btnGas.classList.toggle('pressed', v); };
+    btnGas.onmousedown = () => setGas(true); btnGas.onmouseup = () => setGas(false); btnGas.ontouchstart = (e) => { e.preventDefault(); setGas(true); }; btnGas.ontouchend = () => setGas(false);
+
+    const btnNos = document.getElementById('btn-nos');
+    const setNos = (v) => { if (race) race.nosPressed = v; btnNos.classList.toggle('pressed', v); };
+    btnNos.onmousedown = () => setNos(true); btnNos.onmouseup = () => setNos(false); btnNos.ontouchstart = (e) => { e.preventDefault(); setNos(true); }; btnNos.ontouchend = () => setNos(false);
+
+    document.getElementById('btn-shift-up').onclick = shiftUp;
+    document.getElementById('btn-shift-down').onclick = shiftDown;
+    document.getElementById('btn-abort-race').onclick = exitToGarage;
+    document.getElementById('btn-back-garage').onclick = exitToGarage;
+    document.getElementById('btn-race-again').onclick = startRace;
+
+    window.onkeydown = (e) => {
+      if (!race || !race.active || e.repeat) return;
+      if (e.code === 'KeyD' || e.code === 'ArrowRight') setGas(true);
+      if (e.code === 'Space' || e.code === 'KeyN') { e.preventDefault(); setNos(true); }
+      if (e.code === 'KeyW' || e.code === 'ArrowUp') { e.preventDefault(); shiftUp(); }
+      if (e.code === 'KeyS' || e.code === 'ArrowDown') { e.preventDefault(); shiftDown(); }
+    };
+    window.onkeyup = (e) => {
+      if (!race || !race.active) return;
+      if (e.code === 'KeyD' || e.code === 'ArrowRight') setGas(false);
+      if (e.code === 'Space' || e.code === 'KeyN') setNos(false);
+    };
+
+    updateGarageUI();
+    requestAnimationFrame(renderGarageLoop);
+  </script>
+</body>
+</html>
+
