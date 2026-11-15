@@ -4826,3 +4826,262 @@ const CAR_DATABASE = [
         </div>
         <div class="tab-content active" id="tab-mech"><p style="font-size: 12px; color: var(--text-dim);">Garagem de Peças e Upgrades.</p></div>
         <div class="
+
+          <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>PIXEL STREET DRAG // Pixel Car Racer Legends</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,700;1,700&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #090b10;
+      --panel-bg: rgba(15, 19, 28, 0.96);
+      --panel-border: #2a3346;
+      --neon-cyan: #00f0ff;
+      --neon-pink: #ff2a6d;
+      --neon-amber: #ffaa00;
+      --neon-green: #05ffa1;
+      --text-main: #eef2f7;
+      --text-dim: #7f8ea3;
+      --font-pixel: 'Press Start 2P', monospace;
+      --font-hud: 'Chakra Petch', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      margin: 0;
+      padding: 0;
+      -webkit-touch-callout: none;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-hud);
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header.top-bar {
+      height: 50px;
+      background: linear-gradient(180deg, #161b26 0%, #0d1017 100%);
+      border-bottom: 2px solid #2b3548;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-badge {
+      background: var(--neon-pink);
+      color: #fff;
+      font-family: var(--font-pixel);
+      font-size: 8px;
+      padding: 4px 6px;
+      border-radius: 3px;
+    }
+
+    .brand-title {
+      font-family: var(--font-pixel);
+      font-size: 10px;
+      color: #fff;
+    }
+
+    .top-stats {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stat-pill {
+      background: #0a0d13;
+      border: 1px solid #2e384d;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .stat-pill.money { color: var(--neon-green); border-color: rgba(5, 255, 161, 0.35); }
+    .stat-pill.tier { color: var(--neon-cyan); border-color: rgba(0, 240, 255, 0.35); }
+
+    .btn-icon {
+      background: #171d29;
+      border: 1px solid #354159;
+      color: var(--text-main);
+      padding: 5px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: var(--font-hud);
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    main#app-container {
+      flex: 1;
+      position: relative;
+      display: flex;
+      overflow: hidden;
+    }
+
+    #garage-view {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 10px;
+      padding: 10px;
+      background: #090b10;
+      overflow-y: auto;
+    }
+
+    @media (max-width: 900px) {
+      #garage-view {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .showroom-panel {
+      background: var(--panel-bg);
+      border: 2px solid var(--panel-border);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 10px;
+      position: relative;
+    }
+
+    .car-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .car-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .nav-car-btn {
+      background: #171d29;
+      border: 1px solid #3c4863;
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      font-family: var(--font-pixel);
+      font-size: 10px;
+      cursor: pointer;
+    }
+
+    .car-title-box { flex: 1; }
+    .car-title-box h2 {
+      font-family: var(--font-pixel);
+      font-size: 11px;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+
+    .car-sub {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-weight: 700;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tag-drive { color: var(--neon-cyan); background: rgba(0, 240, 255, 0.1); padding: 1px 4px; border-radius: 3px; }
+
+    .car-canvas-wrap {
+      flex: 1;
+      min-height: 160px;
+      margin: 8px 0;
+      background: #07090e;
+      border: 2px solid #222a3a;
+      border-radius: 4px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #garage-canvas { width: 100%; height: 100%; image-rendering: pixelated; }
+
+    .rev-btn {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(15, 19, 28, 0.9);
+      border: 1px solid var(--neon-amber);
+      color: var(--neon-amber);
+      font-family: var(--font-pixel);
+      font-size: 8px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .rev-btn.active { background: var(--neon-amber); color: #000; }
+
+    .car-owned-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      font-family: var(--font-pixel);
+      font-size: 7px;
+      padding: 3px 6px;
+      border-radius: 3px;
+      background: rgba(5, 255, 161, 0.16);
+      border: 1px solid var(--neon-green);
+      color: var(--neon-green);
+    }
+    .car-owned-badge.locked { background: rgba(255, 170, 0, 0.16); border-color: var(--neon-amber); color: var(--neon-amber); }
+
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .spec-box { background: #0c0f16; border: 1px solid #242d3e; padding: 6px; border-radius: 4px; }
+    .spec-label { font-size: 9px; color: var(--text-dim); text-transform: uppercase; }
+    .spec-val { font-size: 13px; font-weight: 700; color: #fff; margin-top: 2px; }
+    .spec-val span { font-size: 10px; color: var(--neon-cyan); }
+
+    .difficulty-bar { background: #0c0f16; border: 1px solid #283246; border-radius: 5px; padding: 6px 8px; margin-bottom: 8px; }
+    .diff-header { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; margin-bottom: 4px; }
+    .diff-header span.title { color: var(--text-dim); }
+    .diff-header span.reward-tag { color: var(--neon-amber); }
+    .diff-options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+    .diff-btn { background: #141923; border: 1px solid #2c364b; color: var(--text-dim); padding: 5px 2px; border-radius: 4px; font-size: 10px; font-weight: 700; cursor: pointer; text-align: center; }
+    .diff-btn.active[data-diff="medium"] { background: rgba(0, 240, 255, 0.15); border-color: var(--neon-cyan); color: var(--neon-cyan); }
+
+    .race-launch-bar { display: flex; gap: 6px; }
+    .dist-select { background: #111622; border: 1px solid #35425c; color: #fff; font-family: var(--font-hud); font-weight: 700; font-size: 12px; padding: 0 8px; border-radius: 4px; cursor: pointer; }
+    .btn-primary-action { flex: 1; background: linear-gradient(135deg, #ff2a6d 0%, #d91b57 100%); border: 2px solid #ff6b99; color: #fff; font-family: var(--font-pixel); font-size: 10px; padding: 10px; border-radius: 4px; cursor: pointer; text-shadow: 1px 1px 0 #000; box-shadow: 0 0 12px rgba(255, 42, 109, 0.4); }
+    .btn-primary-action.buy-mode { background: linear-gradient(135deg, #05ffa1 0%, #00b874 100%); border-color: #8affd4; color: #041a11; text-shadow: none; }
+
+    .tuning-panel { background: var(--panel-bg); border: 2px solid var(--panel-border); border-radius: 6px; display: flex; flex-direction: column; overflow: hidden; }
+    .tabs-bar { display: grid; grid-template-columns: repeat(3, 1fr); background: #0b0e14; border-bottom: 2px solid #263042; }
+    .tab-btn { background: transparent; border: none; border-right: 1px solid #1e2636; color: var(--text-dim); font
