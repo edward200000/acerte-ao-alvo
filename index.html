@@ -3058,3 +3058,34 @@
   </script>
 </body>
 </html>
+<!-- Exemplo de como inicializar e usar o novo motor de áudio no seu script -->
+<script>
+  // Instancia o gerador de som realista
+  const engineAudio = new RealisticEngineAudio();
+
+  // Ativa ao interagir com a página (ex: clicar em acelerar ou iniciar corrida)
+  document.addEventListener('click', () => {
+    engineAudio.init();
+  }, { once: true });
+
+  // Exemplo de troca de perfil ao selecionar o carro na garagem
+  function updateCarSoundProfile(carModel) {
+    if (carModel.includes('SKYLINE') || carModel.includes('SUPRA')) {
+      engineAudio.setCarProfile('inline6');
+    } else if (carModel.includes('RX-7')) {
+      engineAudio.setCarProfile('rotary');
+    } else if (carModel.includes('CIVIC')) {
+      engineAudio.setCarProfile('vtec');
+    } else if (carModel.includes('CHARGER')) {
+      engineAudio.setCarProfile('v8');
+    } else {
+      engineAudio.setCarProfile('v6');
+    }
+  }
+
+  // No seu loop de animação da corrida / acelerador:
+  // engineAudio.update(currentRpm, maxRpm, isGasPressed, currentBoost, maxBoost);
+
+  // Na hora de passar a marcha (Shift Up):
+  // engineAudio.triggerShiftSound(hasTurbo);
+</script>
